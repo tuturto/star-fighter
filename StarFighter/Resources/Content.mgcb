@@ -1,0 +1,15 @@
+
+#----------------------------- Global Properties ----------------------------#
+
+/outputDir:../Content
+/intermediateDir:../obj/Windows
+/platform:Windows
+/config:
+/profile:Reach
+/compress:True
+
+#-------------------------------- References --------------------------------#
+
+
+#---------------------------------- Content ---------------------------------#
+
