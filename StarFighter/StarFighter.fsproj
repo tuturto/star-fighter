@@ -21,7 +21,7 @@
     <Tailcalls>true</Tailcalls>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <WarningLevel>5</WarningLevel>
+    <WarningLevel>3</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
     <DocumentationFile>bin\Release\StarFighter.XML</DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
@@ -61,7 +61,10 @@
     <None Include="App.config" />
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Input.fs" />
+    <Compile Include="GameInput.fs" />
     <Compile Include="Renderer.fs" />
+    <Compile Include="Types.fs" />
+    <Compile Include="Menu.fs" />
     <Compile Include="Game.fs" />
     <Compile Include="Program.fs" />
     <Content Include="packages.config" />
@@ -75,6 +78,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\fonts\blade-72.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\star.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

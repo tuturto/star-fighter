@@ -106,3 +106,6 @@ let mouseClickStream button =
     mouseButtonDownStream
     |> Observable.filter (fun b -> b.Equals(button))
     |> Observable.sampleWith <| mousePositionStream
+
+let gamePadStream = 
+    new Subject<GamePadState>()

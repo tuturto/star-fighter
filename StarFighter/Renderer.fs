@@ -22,7 +22,5 @@ let renderStream =
 let render (res:RenderResources) =
     res.graphics.Clear(Color.Black)
     res.spriteBatch.Begin()
-    let font = res.fonts.Item "blade-72"
-    res.spriteBatch.DrawString(font, "Star Fighter", Vector2(90.0f, 150.0f), Color.White) |> ignore
     renderStream.OnNext(res)
     res.spriteBatch.End()

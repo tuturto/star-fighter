@@ -1,0 +1,3 @@
+﻿module Menu
+
+let menuInputHandler = ()

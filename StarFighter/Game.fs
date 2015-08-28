@@ -5,8 +5,8 @@ open Microsoft.Xna.Framework.Content
 open Microsoft.Xna.Framework.Graphics
 open Microsoft.Xna.Framework.Input
 
-open RxNA.Input
 open RxNA.Renderer
+open GameInput
 
 type Game () as this =
     inherit Microsoft.Xna.Framework.Game()
@@ -26,25 +26,25 @@ type Game () as this =
         do graphics.PreferredBackBufferHeight <- 768
         do graphics.ApplyChanges()
 
-        RxNA.Input.keyDownStream
+        menuActionStream
         |> Observable.add
-            (function | Keys.Escape -> this.Exit()
-                      | _ -> ())
+            (fun x -> if x |> Array.exists (fun x' -> x' = MenuAction.ExitGame) then this.Exit() else ())
 
     override this.LoadContent() =
         renderResources <-
             { RxNA.Renderer.RenderResources.graphics = this.GraphicsDevice;
               spriteBatch = new SpriteBatch(this.GraphicsDevice);
-              textures = Map.empty;
+              textures = Map.empty.Add("star", contentManager.Load<Texture2D>("star"));
               fonts = Map.empty.Add("blade-12", contentManager.Load<SpriteFont>("fonts/blade-12"))
                                .Add("blade-48", contentManager.Load<SpriteFont>("fonts/blade-48"))
                                .Add("blade-54", contentManager.Load<SpriteFont>("fonts/blade-54"))
-                               .Add("blade-72", contentManager.Load<SpriteFont>("fonts/blade-72"))
+                               .Add("blade-72", contentManager.Load<SpriteFont>("fonts/blade-72"))                               
               gameTime = null }
 
     override this.Update gameTime =
         RxNA.Input.mouseStateStream.OnNext(Mouse.GetState())
         RxNA.Input.keyboardStateStream.OnNext(Keyboard.GetState())
+        RxNA.Input.gamePadStream.OnNext(GamePad.GetState(PlayerIndex.One))
         RxNA.Input.gameTimeStream.OnNext(gameTime)
 
     override this.Draw (gameTime) =
