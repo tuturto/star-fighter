@@ -6,6 +6,8 @@ open FSharp.Control.Reactive
 open Microsoft.Xna.Framework.Input
 open RxNA.Input
 
+open Types
+
 type MenuAction =
     | ExitGame
     | StartGame
@@ -15,6 +17,8 @@ type GameAction =
     | Attack
 
 let menuActionStreamKeys = keysPressedStream
+                           |> Observable.filter
+                                (fun x -> gameModeStream.Value = Menu)
                            |> Observable.map
                                 (fun x -> x |> Array.map (function | Keys.Escape -> Some(ExitGame)
                                                                    | Keys.Space -> Some(StartGame)
@@ -25,6 +29,8 @@ let menuActionStreamKeys = keysPressedStream
                                 (fun x -> x |> Array.length > 0)
 
 let menuActionStreamPad = gamePadStream 
+                          |> Observable.filter
+                                (fun x -> gameModeStream.Value = Menu)
                           |> Observable.map
                                 (fun x -> [| (if x.IsButtonDown Buttons.B then Some(ExitGame) else None);
                                              (if x.IsButtonDown Buttons.A then Some(StartGame) else None) |]
