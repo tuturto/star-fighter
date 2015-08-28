@@ -7,6 +7,8 @@ open Microsoft.Xna.Framework.Input
 
 open RxNA.Renderer
 open GameInput
+open Types
+open Menu
 
 type Game () as this =
     inherit Microsoft.Xna.Framework.Game()
@@ -26,9 +28,11 @@ type Game () as this =
         do graphics.PreferredBackBufferHeight <- 768
         do graphics.ApplyChanges()
 
-        menuActionStream
+        gameModeStream
         |> Observable.add
-            (fun x -> if x |> Array.exists (fun x' -> x' = MenuAction.ExitGame) then this.Exit() else ())
+            (function | ExitingGame -> this.Exit()
+                      | _ -> ())
+        menuInputHandler |> ignore // TODO: cleaner way to do this?
 
     override this.LoadContent() =
         renderResources <-
