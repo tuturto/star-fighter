@@ -21,6 +21,9 @@ type Game () as this =
 
     override this.Initialize() =
         base.Initialize()
+        do graphics.PreferredBackBufferWidth <- 1024
+        do graphics.PreferredBackBufferHeight <- 768
+        do graphics.ApplyChanges()
 
         RxNA.Input.keyDownStream
         |> Observable.add
