@@ -6,12 +6,14 @@ open Microsoft.Xna.Framework.Graphics
 open System.Reactive.Subjects
 
 type TextureMap = Map<string, Texture2D>
+type FontMap = Map<string, SpriteFont>
 
 [<NoComparison>]
 type RenderResources = {
     graphics: GraphicsDevice;
     spriteBatch: SpriteBatch;
     textures: TextureMap;
+    fonts: FontMap;
     gameTime: GameTime }
 
 let renderStream =
@@ -20,5 +22,7 @@ let renderStream =
 let render (res:RenderResources) =
     res.graphics.Clear(Color.Black)
     res.spriteBatch.Begin()
+    let font = res.fonts.Item "blade-72"
+    res.spriteBatch.DrawString(font, "Star Fighter", Vector2(90.0f, 150.0f), Color.White) |> ignore
     renderStream.OnNext(res)
     res.spriteBatch.End()

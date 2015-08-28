@@ -17,6 +17,7 @@ type Game () as this =
         { RxNA.Renderer.RenderResources.graphics = null;
           spriteBatch = null;
           textures = Map.empty;
+          fonts = Map.empty;
           gameTime = null }
 
     override this.Initialize() =
@@ -35,6 +36,10 @@ type Game () as this =
             { RxNA.Renderer.RenderResources.graphics = this.GraphicsDevice;
               spriteBatch = new SpriteBatch(this.GraphicsDevice);
               textures = Map.empty;
+              fonts = Map.empty.Add("blade-12", contentManager.Load<SpriteFont>("fonts/blade-12"))
+                               .Add("blade-48", contentManager.Load<SpriteFont>("fonts/blade-48"))
+                               .Add("blade-54", contentManager.Load<SpriteFont>("fonts/blade-54"))
+                               .Add("blade-72", contentManager.Load<SpriteFont>("fonts/blade-72"))
               gameTime = null }
 
     override this.Update gameTime =
