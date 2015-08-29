@@ -33,6 +33,7 @@ type Game () as this =
             (function | ExitingGame -> this.Exit()
                       | _ -> ())
         menuInputHandler |> ignore // TODO: cleaner way to do this?
+        menuRenderer |> ignore
 
     override this.LoadContent() =
         renderResources <-

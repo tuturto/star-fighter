@@ -4,6 +4,7 @@ open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
 
 open System.Reactive.Subjects
+open Types
 
 type TextureMap = Map<string, Texture2D>
 type FontMap = Map<string, SpriteFont>
@@ -19,6 +20,10 @@ type RenderResources = {
 let renderStream =
     new Subject<RenderResources>()
  
+let menuRenderStream =
+    renderStream
+    |> Observable.filter (fun res -> gameModeStream.Value = Menu)
+
 let render (res:RenderResources) =
     res.graphics.Clear(Color.Black)
     res.spriteBatch.Begin()
