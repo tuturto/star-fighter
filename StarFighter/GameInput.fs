@@ -16,6 +16,10 @@ type GameAction =
     | Move of float * float
     | Attack
 
+let menuTimeStream =
+    gameTimeStream
+    |> Observable.filter (fun x -> gameModeStream.Value = Menu)
+
 let menuActionStreamKeys = keysPressedStream
                            |> Observable.filter
                                 (fun x -> gameModeStream.Value = Menu)

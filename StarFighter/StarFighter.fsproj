@@ -61,9 +61,11 @@
     <None Include="App.config" />
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Input.fs" />
+    <Compile Include="Renderer.fs" />
     <Compile Include="Types.fs" />
     <Compile Include="GameInput.fs" />
-    <Compile Include="Renderer.fs" />
+    <Compile Include="GameRenderer.fs" />
+    <Compile Include="Stars.fs" />
     <Compile Include="Menu.fs" />
     <Compile Include="Game.fs" />
     <Compile Include="Program.fs" />

@@ -5,10 +5,14 @@ open Microsoft.Xna.Framework.Content
 open Microsoft.Xna.Framework.Graphics
 open Microsoft.Xna.Framework.Input
 
-open RxNA.Renderer
+open FSharp.Control.Reactive 
+
+open RxNA.Renderer 
 open GameInput
+open GameRenderer
 open Types
 open Menu
+open Stars
 
 type Game () as this =
     inherit Microsoft.Xna.Framework.Game()
@@ -32,8 +36,18 @@ type Game () as this =
         |> Observable.add
             (function | ExitingGame -> this.Exit()
                       | _ -> ())
-        menuInputHandler |> ignore // TODO: cleaner way to do this?
-        menuRenderer |> ignore
+
+        Observable.subscribe menuInputHandler menuActionStream |> ignore
+
+        menuTimeStream
+        |> Observable.scanInit (initialStarField renderResources) starsUpdater
+        |> ignore
+
+        menuRenderStream
+        |> Observable.zip (menuTimeStream |> Observable.scanInit (initialStarField renderResources) starsUpdater)
+        |> Observable.subscribe starsRenderer
+        |> ignore
+        Observable.subscribe menuRenderer  menuRenderStream |> ignore
 
     override this.LoadContent() =
         renderResources <-
