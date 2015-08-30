@@ -1,11 +1,35 @@
 ﻿module Menu
 
 open Microsoft.Xna.Framework
+open Microsoft.Xna.Framework.Input
 open Microsoft.Xna.Framework.Graphics
 
 open RxNA.Renderer
+open RxNA.Input 
 open GameInput
 open Types
+
+let menuActionStreamKeys = keysPressedStream
+                           |> Observable.filter
+                                (fun x -> gameModeStream.Value = Menu)
+                           |> Observable.map
+                                (fun x -> x |> Array.map (function | Keys.Escape -> Some(ExitGame)
+                                                                   | Keys.Space -> Some(StartGame)
+                                                                   | _ -> None)
+                                            |> Array.filter (fun item -> item.IsSome)
+                                            |> Array.map (fun item -> item.Value))
+
+let menuActionStreamPad = gamePadStream 
+                          |> Observable.filter
+                                (fun x -> gameModeStream.Value = Menu)
+                          |> Observable.map
+                                (fun x -> [| (if x.IsButtonDown Buttons.B then Some(ExitGame) else None);
+                                             (if x.IsButtonDown Buttons.A then Some(StartGame) else None) |]
+                                          |> Array.filter (fun item -> item.IsSome)
+                                          |> Array.map (fun item -> item.Value))
+
+let menuActionStream = menuActionStreamKeys
+                       |> Observable.merge menuActionStreamPad 
 
 let initialMenu res = 
     { x = 500.0f;

@@ -7,6 +7,6 @@ let menuRenderStream =
     renderStream
     |> Observable.filter (fun res -> gameModeStream.Value = Menu)
 
-let gameRenderStream =
+let gameRunningRenderStream =
     renderStream
     |> Observable.filter (fun res -> gameModeStream.Value = GameRunning)

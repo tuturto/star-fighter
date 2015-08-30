@@ -41,7 +41,7 @@ type Game () as this =
         Observable.subscribe menuInputHandler menuActionStream |> ignore
 
         menuRenderStream
-        |> Observable.merge gameRenderStream
+        |> Observable.merge gameRunningRenderStream
         |> Observable.zip (menuTimeStream
                            |> Observable.merge gameRunningTimeStream
                            |> Observable.scanInit (initialStarField renderResources) starsUpdater)
@@ -53,7 +53,7 @@ type Game () as this =
         |> Observable.subscribe menuRenderer
         |> ignore
 
-        gameRenderStream
+        gameRunningRenderStream
         |> Observable.zip (gameRunningTimeStream |> Observable.scanInit (initialPlayer renderResources) playerUpdater)
         |> Observable.subscribe playerRenderer
         |> ignore
