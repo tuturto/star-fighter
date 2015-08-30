@@ -5,6 +5,7 @@ open Microsoft.Xna.Framework.Graphics
 
 type GameMode =
     | Menu
+    | GameRunning
     | ExitingGame
 
 type Mob = { x: float32;

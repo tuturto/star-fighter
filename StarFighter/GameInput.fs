@@ -20,6 +20,10 @@ let menuTimeStream =
     gameTimeStream
     |> Observable.filter (fun x -> gameModeStream.Value = Menu)
 
+let gameRunningTimeStream =
+    gameTimeStream
+    |> Observable.filter (fun x -> gameModeStream.Value = GameRunning)
+
 let menuActionStreamKeys = keysPressedStream
                            |> Observable.filter
                                 (fun x -> gameModeStream.Value = Menu)

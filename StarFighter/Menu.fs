@@ -17,7 +17,9 @@ let initialMenu res =
 let menuInputHandler actions = 
     if actions |> Array.exists (fun action -> action = MenuAction.ExitGame) 
         then gameModeStream.OnNext ExitingGame
-        else ()
+        else if actions |> Array.exists (fun action -> action = MenuAction.StartGame)
+            then gameModeStream.OnNext GameRunning
+            else ()
 
 let menuUpdater state (time:GameTime) =
     state

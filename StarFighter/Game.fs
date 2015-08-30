@@ -13,6 +13,7 @@ open GameRenderer
 open Types
 open Menu
 open Stars
+open Player
 
 type Game () as this =
     inherit Microsoft.Xna.Framework.Game()
@@ -47,6 +48,16 @@ type Game () as this =
         menuRenderStream
         |> Observable.zip (menuTimeStream |> Observable.scanInit (initialMenu renderResources) menuUpdater)
         |> Observable.subscribe menuRenderer
+        |> ignore
+
+        gameRenderStream
+        |> Observable.zip (gameRunningTimeStream |> Observable.scanInit (initialStarField renderResources) starsUpdater)
+        |> Observable.subscribe starsRenderer
+        |> ignore
+
+        gameRenderStream
+        |> Observable.zip (gameRunningTimeStream |> Observable.scanInit (initialPlayer renderResources) playerUpdater)
+        |> Observable.subscribe playerRenderer
         |> ignore
 
     override this.LoadContent() =
