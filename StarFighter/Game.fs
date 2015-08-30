@@ -47,13 +47,18 @@ type Game () as this =
         |> Observable.zip (menuTimeStream |> Observable.scanInit (initialStarField renderResources) starsUpdater)
         |> Observable.subscribe starsRenderer
         |> ignore
-        Observable.subscribe menuRenderer  menuRenderStream |> ignore
+
+        menuRenderStream
+        |> Observable.zip (menuTimeStream |> Observable.scanInit (initialMenu renderResources) menuUpdater)
+        |> Observable.subscribe menuRenderer
+        |> ignore
 
     override this.LoadContent() =
         renderResources <-
             { RxNA.Renderer.RenderResources.graphics = this.GraphicsDevice;
               spriteBatch = new SpriteBatch(this.GraphicsDevice);
-              textures = Map.empty.Add("star", contentManager.Load<Texture2D>("star"));
+              textures = Map.empty.Add("star", contentManager.Load<Texture2D>("star"))
+                                  .Add("player", contentManager.Load<Texture2D>("player"));
               fonts = Map.empty.Add("blade-12", contentManager.Load<SpriteFont>("fonts/blade-12"))
                                .Add("blade-48", contentManager.Load<SpriteFont>("fonts/blade-48"))
                                .Add("blade-54", contentManager.Load<SpriteFont>("fonts/blade-54"))
