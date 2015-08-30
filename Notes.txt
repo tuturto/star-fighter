@@ -4,8 +4,9 @@ Star Fighter
 x Main Menu
   x Exit
   - Start
-- Player ship
-- Pad/key steering
+x Player ship
+x Pad/key steering
+  - shooting
 x Parallax star field
 - Procedurally generated levels
   - enemies

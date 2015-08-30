@@ -54,7 +54,9 @@ type Game () as this =
         |> ignore
 
         gameRunningRenderStream
-        |> Observable.zip (gameRunningTimeStream |> Observable.scanInit (initialPlayer renderResources) playerUpdater)
+        |> Observable.zip (gameRunningTimeStream
+                           |> Observable.zip playerActionStream
+                           |> Observable.scanInit (initialPlayer renderResources) playerUpdater)                           
         |> Observable.subscribe playerRenderer
         |> ignore
 

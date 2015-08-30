@@ -13,7 +13,7 @@ type MenuAction =
     | StartGame
 
 type GameAction =
-    | Move of float * float
+    | Move of float32 * float32
     | Attack
 
 let menuTimeStream =
