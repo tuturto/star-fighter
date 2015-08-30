@@ -1,14 +1,16 @@
 Star Fighter
 ============
 
-- Main Menu
-  - Exit
+x Main Menu
+  x Exit
   - Start
 - Player ship
-- Mouse steering
-- Parallax star field
+- Pad/key steering
+x Parallax star field
 - Procedurally generated levels
-- End bosses
+  - enemies
+  - backgrounds
+  - End bosses
 - Fullscreen
-  - Scale graphics to native resolution
+  - Scale graphics to native resolution / have bigger playing area?
   - Add something pretty around playing area if aspect ratio is different

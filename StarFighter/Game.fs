@@ -39,10 +39,6 @@ type Game () as this =
 
         Observable.subscribe menuInputHandler menuActionStream |> ignore
 
-        menuTimeStream
-        |> Observable.scanInit (initialStarField renderResources) starsUpdater
-        |> ignore
-
         menuRenderStream
         |> Observable.zip (menuTimeStream |> Observable.scanInit (initialStarField renderResources) starsUpdater)
         |> Observable.subscribe starsRenderer
