@@ -46,11 +46,19 @@ let initialPlayer res =
       dy = 0.0f;
       texture = res.textures.Item "player" } 
 
+let addMovementActions state action =
+    match action with
+        | Move (0.0f, 0.0f) -> { state with dx=0.0f; dy=0.0f; }
+        | Move (dx, 0.0f) -> { state with dx=dx; }
+        | Move (0.0f, dy) -> { state with dy=dy; }
+        | Move (dx, dy) -> { state with dx=dx; dy=dy; }
+        | _ -> state
+
 let playerUpdater (state:Mob) ((actions:GameAction []), (time:GameTime)) =
     let speed = (float32)(time.ElapsedGameTime.TotalMilliseconds / 1000.0)
     let newState = Array.fold (fun acc item ->
                                     match item with
-                                        | Move (dx, dy) -> { state with dx=dx; dy=dy; }
+                                        | Move (dx, dy) -> addMovementActions acc item
                                         | Attack -> state)
                               state
                               actions
