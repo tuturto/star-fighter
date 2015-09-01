@@ -14,6 +14,7 @@ open Types
 open Menu
 open Stars
 open Player
+open Enemies
 
 type Game () as this =
     inherit Microsoft.Xna.Framework.Game()
@@ -57,14 +58,21 @@ type Game () as this =
         |> Observable.subscribe (fun x -> ())
         |> ignore
 
-        let playerFrame = gameRunningTimeStream
-                          |> Observable.zip playerActionStream
-                          |> Observable.scanInit (initialPlayer renderResources) playerUpdater
-                          |> Observable.map mapPlayerToFrame
+        let playerStream = gameRunningTimeStream
+                           |> Observable.zip playerActionStream
+                           |> Observable.scanInit (initialPlayer renderResources) playerUpdater
+        let playerFrame = playerStream
+                          |> Observable.map mapPlayerToFrame                           
+
+        let enemiesFrame = gameRunningTimeStream
+                           |> Observable.zip playerStream
+                           |> Observable.scanInit (initialEnemies renderResources) enemiesUpdater
+                           |> Observable.map mapEnemiesToFrame
 
         gameRunningRenderStream
         |> Observable.map mapRenderStreamToFrame
         |> Observable.merge playerFrame
+        |> Observable.merge enemiesFrame
         |> Observable.merge starFrame
         |> Observable.scanInit initialFrame gameRunningRenderer
         |> Observable.subscribe (fun x -> ())
