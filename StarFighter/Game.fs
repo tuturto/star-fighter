@@ -40,24 +40,27 @@ type Game () as this =
 
         Observable.subscribe menuInputHandler menuActionStream |> ignore
 
-        menuRenderStream
-        |> Observable.merge gameRunningRenderStream
-        |> Observable.zip (menuTimeStream
-                           |> Observable.merge gameRunningTimeStream
-                           |> Observable.scanInit (initialStarField renderResources) starsUpdater)
-        |> Observable.subscribe starsRenderer
-        |> ignore
+        let starFrame = menuTimeStream
+                        |> Observable.merge gameRunningTimeStream
+                        |> Observable.scanInit (initialStarField renderResources) starsUpdater
+                        |> Observable.map mapStarsToFrame
 
         menuRenderStream
         |> Observable.zip (menuTimeStream |> Observable.scanInit (initialMenu renderResources) menuUpdater)
         |> Observable.subscribe menuRenderer
         |> ignore
 
+        let playerFrame = gameRunningTimeStream
+                          |> Observable.zip playerActionStream
+                          |> Observable.scanInit (initialPlayer renderResources) playerUpdater
+                          |> Observable.map mapPlayerToFrame
+
         gameRunningRenderStream
-        |> Observable.zip (gameRunningTimeStream
-                           |> Observable.zip playerActionStream
-                           |> Observable.scanInit (initialPlayer renderResources) playerUpdater)                           
-        |> Observable.subscribe playerRenderer
+        |> Observable.map mapRenderStreamToFrame
+        |> Observable.merge playerFrame
+        |> Observable.merge starFrame
+        |> Observable.scanInit initialFrame gameRunningRenderer
+        |> Observable.subscribe (fun x -> ())
         |> ignore
 
     override this.LoadContent() =

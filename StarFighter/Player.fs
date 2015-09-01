@@ -11,7 +11,6 @@ open Types
 open RxNA.Renderer 
 open RxNA.Input 
 open GameInput
-open GameRenderer
 
 let playerActionStreamKeys = keysPressedStream
                              |> Observable.filter
@@ -65,5 +64,8 @@ let playerUpdater (state:Mob) ((actions:GameAction []), (time:GameTime)) =
     { newState with x=newState.x + newState.dx * speed * 250.0f;
                     y=newState.y + newState.dy * speed * 250.0f;}
 
-let playerRenderer (state, (res: RenderResources)) = 
-    res.spriteBatch.Draw(state.texture, Vector2(state.x, state.y), Color.White)
+let playerRenderer state res = 
+    match state with
+        | None -> ()
+        | Some player ->
+            res.spriteBatch.Draw(player.texture, Vector2(player.x, player.y), Color.White)

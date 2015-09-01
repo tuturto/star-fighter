@@ -64,10 +64,10 @@
     <Compile Include="Renderer.fs" />
     <Compile Include="Types.fs" />
     <Compile Include="GameInput.fs" />
-    <Compile Include="GameRenderer.fs" />
     <Compile Include="Stars.fs" />
     <Compile Include="Menu.fs" />
     <Compile Include="Player.fs" />
+    <Compile Include="GameRenderer.fs" />
     <Compile Include="Game.fs" />
     <Compile Include="Program.fs" />
     <Content Include="packages.config" />
