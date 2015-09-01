@@ -75,7 +75,8 @@ type Game () as this =
             { RxNA.Renderer.RenderResources.graphics = this.GraphicsDevice;
               spriteBatch = new SpriteBatch(this.GraphicsDevice);
               textures = Map.empty.Add("star", contentManager.Load<Texture2D>("star"))
-                                  .Add("player", contentManager.Load<Texture2D>("player"));
+                                  .Add("player", contentManager.Load<Texture2D>("player"))
+                                  .Add("asteroid", contentManager.Load<Texture2D>("asteroid"))
               fonts = Map.empty.Add("blade-12", contentManager.Load<SpriteFont>("fonts/blade-12"))
                                .Add("blade-48", contentManager.Load<SpriteFont>("fonts/blade-48"))
                                .Add("blade-54", contentManager.Load<SpriteFont>("fonts/blade-54"))
