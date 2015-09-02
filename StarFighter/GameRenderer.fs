@@ -15,11 +15,6 @@ let gameRunningRenderStream =
     renderStream
     |> Observable.filter (fun res -> gameModeStream.Value = GameRunning)
 
-let choose opt1 opt2 =
-    match opt2 with
-        | None -> opt1
-        | Some n -> opt2
-
 type Frame =
     { player: Mob option
       enemies: Mob list option
@@ -27,11 +22,11 @@ type Frame =
       starField: Mob list option
       renderResources: RenderResources option }
     static member (++) (arg1, arg2) =
-        { player = choose arg1.player arg2.player;
-          enemies = choose arg1.enemies arg2.enemies;
-          menu = choose arg1.menu arg2.menu;
-          starField = choose arg1.starField arg2.starField;
-          renderResources = choose arg1.renderResources arg2.renderResources; }
+        { player = OptionExt.orElse arg1.player arg2.player;
+          enemies = OptionExt.orElse arg1.enemies arg2.enemies;
+          menu = OptionExt.orElse arg1.menu arg2.menu;
+          starField = OptionExt.orElse arg1.starField arg2.starField;
+          renderResources = OptionExt.orElse arg1.renderResources arg2.renderResources; }
 
 let initialFrame =
     { player = None;
