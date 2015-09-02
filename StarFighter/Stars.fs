@@ -35,7 +35,5 @@ let private renderStar res star =
     res.spriteBatch.Draw(star.texture, Vector2(star.x, star.y), colour)
 
 let starsRenderer stars res =
-    match stars with
-        | None -> ()
-        | Some state -> 
-            List.iter (renderStar res) state
+    Option.iter (fun state ->
+                    List.iter (renderStar res) state) stars

@@ -72,19 +72,15 @@ let mapRenderStreamToFrame renderStream =
 
 let menuShownRenderer frame frameStream =     
     let newFrame = frame ++ frameStream
-    match frameStream.renderResources with
-        | None -> newFrame
-        | Some res -> 
-            starsRenderer newFrame.starField res
-            menuRenderer newFrame.menu res
-            newFrame
+    Option.iter (fun res ->
+                    starsRenderer newFrame.starField res
+                    menuRenderer newFrame.menu res) frameStream.renderResources           
+    newFrame
 
 let gameRunningRenderer frame frameStream = 
     let newFrame = frame ++ frameStream
-    match frameStream.renderResources with
-        | None -> newFrame
-        | Some res -> 
-            starsRenderer newFrame.starField res
-            enemiesRenderer newFrame.enemies res
-            playerRenderer newFrame.player res
-            newFrame
+    Option.iter (fun res ->
+                    starsRenderer newFrame.starField res
+                    enemiesRenderer newFrame.enemies res
+                    playerRenderer newFrame.player res) frameStream.renderResources
+    newFrame

@@ -65,7 +65,5 @@ let playerUpdater (state:Mob) ((actions:GameAction []), (time:GameTime)) =
                     y=newState.y + newState.dy * speed * 250.0f;}
 
 let playerRenderer state res = 
-    match state with
-        | None -> ()
-        | Some player ->
-            res.spriteBatch.Draw(player.texture, Vector2(player.x - 48.0f, player.y - 48.0f), Color.White)
+    Option.iter (fun player ->
+                    res.spriteBatch.Draw(player.texture, Vector2(player.x - 48.0f, player.y - 48.0f), Color.White)) state

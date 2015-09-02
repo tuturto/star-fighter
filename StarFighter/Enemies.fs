@@ -31,7 +31,5 @@ let private renderEnemy res enemy =
     res.spriteBatch.Draw(enemy.texture, Vector2(enemy.x - 48.0f, enemy.y - 48.0f), Color.White)
 
 let enemiesRenderer enemies res =
-    match enemies with
-        | None -> ()
-        | Some state -> 
-            List.iter (renderEnemy res) state
+    Option.iter (fun state ->
+                    List.iter (renderEnemy res) state) enemies
