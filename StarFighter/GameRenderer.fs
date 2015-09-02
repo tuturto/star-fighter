@@ -22,11 +22,11 @@ type Frame =
       starField: Mob list option
       renderResources: RenderResources option }
     static member (++) (arg1, arg2) =
-        { player = OptionExt.orElse arg1.player arg2.player;
-          enemies = OptionExt.orElse arg1.enemies arg2.enemies;
-          menu = OptionExt.orElse arg1.menu arg2.menu;
-          starField = OptionExt.orElse arg1.starField arg2.starField;
-          renderResources = OptionExt.orElse arg1.renderResources arg2.renderResources; }
+        { player = Option.orElse arg1.player arg2.player;
+          enemies = Option.orElse arg1.enemies arg2.enemies;
+          menu = Option.orElse arg1.menu arg2.menu;
+          starField = Option.orElse arg1.starField arg2.starField;
+          renderResources = Option.orElse arg1.renderResources arg2.renderResources; }
 
 let initialFrame =
     { player = None;
