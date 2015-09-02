@@ -28,7 +28,7 @@ let enemiesUpdater state (player, (time:GameTime)) =
             else { enemy with y = enemy.y + enemy.dy })
 
 let private renderEnemy res enemy =
-    res.spriteBatch.Draw(enemy.texture, Vector2(enemy.x, enemy.y), Color.White)
+    res.spriteBatch.Draw(enemy.texture, Vector2(enemy.x - 48.0f, enemy.y - 48.0f), Color.White)
 
 let enemiesRenderer enemies res =
     match enemies with

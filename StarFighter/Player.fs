@@ -68,4 +68,4 @@ let playerRenderer state res =
     match state with
         | None -> ()
         | Some player ->
-            res.spriteBatch.Draw(player.texture, Vector2(player.x, player.y), Color.White)
+            res.spriteBatch.Draw(player.texture, Vector2(player.x - 48.0f, player.y - 48.0f), Color.White)
