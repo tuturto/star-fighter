@@ -41,17 +41,18 @@ let playerActionStream = playerActionStreamKeys
 let initialPlayer res = 
     { location = { x = 464.0f;
                    y = 600.0f; }
-      dx = 0.0f;
-      dy = 0.0f;
+      speed = { dx = 0.0f;
+                dy = 0.0f; }
       texture = res.textures.Item "player" } 
 
 let addMovementActions state action =
-    match action with
-        | Move (0.0f, 0.0f) -> { state with dx=0.0f; dy=0.0f; }
-        | Move (dx, 0.0f) -> { state with dx=dx; }
-        | Move (0.0f, dy) -> { state with dy=dy; }
-        | Move (dx, dy) -> { state with dx=dx; dy=dy; }
-        | _ -> state
+    let newSpeed = match action with
+                       | Move (0.0f, 0.0f) -> { dx=0.0f; dy=0.0f; }
+                       | Move (dx, 0.0f) -> { state.speed with dx=dx; }
+                       | Move (0.0f, dy) -> { state.speed with dy=dy; }
+                       | Move (dx, dy) -> { dx=dx; dy=dy; }
+                       | _ -> state.speed
+    { state with speed = newSpeed }
 
 let playerUpdater (state:Mob) ((actions:GameAction []), (time:GameTime)) =
     let speed = (float32)(time.ElapsedGameTime.TotalMilliseconds / 1000.0)
@@ -61,9 +62,7 @@ let playerUpdater (state:Mob) ((actions:GameAction []), (time:GameTime)) =
                                         | Attack -> state)
                               state
                               actions
-    let newLocation = { x=newState.location.x + newState.dx * speed * 250.0f;
-                        y=newState.location.y + newState.dy * speed * 250.0f; }
-    { newState with location = newLocation }
+    { newState with location = newState.location + newState.speed * speed * 250.0f}
 
 let playerRenderer state res = 
     Option.iter (fun player ->

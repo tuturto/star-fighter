@@ -34,8 +34,8 @@ let menuActionStream = menuActionStreamKeys
 let initialMenu res = 
     { location = { x = 500.0f;
                    y = 600.0f; }
-      dx = 0.0f;
-      dy = 0.0f;
+      speed = { dx = 0.0f;
+                dy = 0.0f; }
       texture = res.textures.Item "player" }
 
 let menuInputHandler actions = 
