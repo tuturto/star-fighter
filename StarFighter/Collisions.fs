@@ -16,12 +16,11 @@ let maybe = new MaybeBuilder()
 
 
 
-let boundingSphereCollision mob1 mob2 =
-    let dx = mob1.x - mob2.x 
-    let dy = mob1.y - mob2.y
+let boundingSphereCollision (mob1:Mob) (mob2:Mob) =
+    let dx = mob1.location.x - mob2.location.x 
+    let dy = mob1.location.y - mob2.location.y
     if dx*dx + dy*dy <= 9216.0f
-        then Some { Location.x = (mob1.x + mob2.x) / 2.0f;
-                    Location.y = (mob1.y + mob2.y) / 2.0f; }
+        then Some ((mob1.location + mob2.location) / 2.0f);
         else None
 
 let pixelPerfectCollision mob1 mob2 =

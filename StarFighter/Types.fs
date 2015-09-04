@@ -18,9 +18,15 @@ type Speed =
 type Location = 
      { x: float32
        y: float32 }
-     static member (+) (location, speed) =
+     static member (+) (location:Location, speed:Speed) =
         { x = location.x + speed.dx;
           y = location.y + speed.dy; }
+     static member (+) (location1:Location, location2:Location) =
+        { x = location1.x + location2.x;
+          y = location1.y + location2.y; }
+     static member (/) (location, scalar) =
+        { x = location.x / scalar;
+          y = location.y / scalar; }
 
 type Mob = { location: Location
              speed: Speed
