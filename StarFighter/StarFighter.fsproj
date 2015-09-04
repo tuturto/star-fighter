@@ -64,6 +64,7 @@
     <Compile Include="Renderer.fs" />
     <Compile Include="OptionExt.fs" />
     <Compile Include="Types.fs" />
+    <Compile Include="Collisions.fs" />
     <Compile Include="GameInput.fs" />
     <Compile Include="Stars.fs" />
     <Compile Include="Menu.fs" />

@@ -8,11 +8,13 @@ type GameMode =
     | GameRunning
     | ExitingGame
 
-type Mob = { x: float32;
-             y: float32;
-             dx: float32;
-             dy: float32;
-             texture: Texture2D; }
+type Location = { x: float32
+                  y: float32 }
+
+type Mob = { location: Location
+             dx: float32
+             dy: float32
+             texture: Texture2D }
 
 let R = System.Random()
 

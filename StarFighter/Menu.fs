@@ -32,8 +32,8 @@ let menuActionStream = menuActionStreamKeys
                        |> Observable.merge menuActionStreamPad 
 
 let initialMenu res = 
-    { x = 500.0f;
-      y = 600.0f;
+    { location = { x = 500.0f;
+                   y = 600.0f; }
       dx = 0.0f;
       dy = 0.0f;
       texture = res.textures.Item "player" }
@@ -50,7 +50,7 @@ let menuUpdater state (time:GameTime) =
 
 let menuRenderer state res =
     Option.iter (fun menu ->
-                    res.spriteBatch.Draw(menu.texture, Vector2(menu.x, menu.y), Color.White)
+                    res.spriteBatch.Draw(menu.texture, Vector2(menu.location.x, menu.location.y), Color.White)
                     let font72 = res.fonts.Item "blade-72"
                     let font12 = res.fonts.Item "blade-12"
                     res.spriteBatch.DrawString(font72, "star fighter", Vector2(90.0f, 150.0f), Color.White)

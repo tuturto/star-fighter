@@ -39,8 +39,8 @@ let playerActionStream = playerActionStreamKeys
                          |> Observable.map (fun (a, b) -> Array.concat [a; b])
 
 let initialPlayer res = 
-    { x = 464.0f;
-      y = 600.0f;
+    { location = { x = 464.0f;
+                   y = 600.0f; }
       dx = 0.0f;
       dy = 0.0f;
       texture = res.textures.Item "player" } 
@@ -61,9 +61,10 @@ let playerUpdater (state:Mob) ((actions:GameAction []), (time:GameTime)) =
                                         | Attack -> state)
                               state
                               actions
-    { newState with x=newState.x + newState.dx * speed * 250.0f;
-                    y=newState.y + newState.dy * speed * 250.0f;}
+    let newLocation = { x=newState.location.x + newState.dx * speed * 250.0f;
+                        y=newState.location.y + newState.dy * speed * 250.0f; }
+    { newState with location = newLocation }
 
 let playerRenderer state res = 
     Option.iter (fun player ->
-                    res.spriteBatch.Draw(player.texture, Vector2(player.x - 48.0f, player.y - 48.0f), Color.White)) state
+                    res.spriteBatch.Draw(player.texture, Vector2(player.location.x - 48.0f, player.location.y - 48.0f), Color.White)) state
