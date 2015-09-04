@@ -2,20 +2,6 @@
 
 open Types
 
-type MaybeBuilder() =
-
-    member this.Bind(x, f) = 
-        match x with
-        | None -> None
-        | Some a -> f a
-
-    member this.Return(x) = 
-        Some x
-   
-let maybe = new MaybeBuilder()
-
-
-
 let boundingSphereCollision (mob1:Mob) (mob2:Mob) =
     let dx = mob1.location.x - mob2.location.x 
     let dy = mob1.location.y - mob2.location.y
