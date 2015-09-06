@@ -58,16 +58,19 @@ type Game () as this =
         |> Observable.subscribe (fun x -> ())
         |> ignore
 
+        let enemiesStream = gameRunningTimeStream
+                            |> Observable.scanInit (initialEnemies renderResources) enemiesUpdater
+                            |> Observable.publish 
+
+        let enemiesFrame = enemiesStream
+                           |> Observable.map mapEnemiesToFrame
+
         let playerStream = gameRunningTimeStream
                            |> Observable.zip playerActionStream
+                           |> Observable.zip enemiesStream
                            |> Observable.scanInit (initialPlayer renderResources) playerUpdater
         let playerFrame = playerStream
                           |> Observable.map mapPlayerToFrame                           
-
-        let enemiesFrame = gameRunningTimeStream
-                           |> Observable.zip playerStream
-                           |> Observable.scanInit (initialEnemies renderResources) enemiesUpdater
-                           |> Observable.map mapEnemiesToFrame
 
         gameRunningRenderStream
         |> Observable.map mapRenderStreamToFrame
@@ -77,6 +80,8 @@ type Game () as this =
         |> Observable.scanInit initialFrame gameRunningRenderer
         |> Observable.subscribe (fun x -> ())
         |> ignore
+
+        enemiesStream.Connect() |> ignore
 
     override this.LoadContent() =
         renderResources <-

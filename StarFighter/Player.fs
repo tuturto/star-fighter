@@ -11,6 +11,7 @@ open Types
 open RxNA.Renderer 
 open RxNA.Input 
 open GameInput
+open Collisions
 
 let playerActionStreamKeys = keysPressedStream
                              |> Observable.filter
@@ -54,15 +55,19 @@ let addMovementActions state action =
                        | _ -> state.speed
     { state with speed = newSpeed }
 
-let playerUpdater (state:Mob) ((actions:GameAction []), (time:GameTime)) =
+let playerUpdater (state:Mob) (enemies, ((actions:GameAction []), (time:GameTime))) =
     let speed = (float32)(time.ElapsedGameTime.TotalMilliseconds / 1000.0)
+    let collisionPoints = List.map (collision state) enemies
+                          |> List.filter (fun x -> x.IsSome)
     let newState = Array.fold (fun acc item ->
                                     match item with
                                         | Move (dx, dy) -> addMovementActions acc item
                                         | Attack -> state)
                               state
                               actions
-    { newState with location = newState.location + newState.speed * speed * 250.0f}
+    { newState with location = if List.isEmpty collisionPoints
+                                  then newState.location + newState.speed * speed * 250.0f
+                                  else { x = 464.0f; y = 600.0f }}
 
 let playerRenderer state res = 
     Option.iter (fun player ->

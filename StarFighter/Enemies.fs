@@ -19,7 +19,7 @@ let initialEnemies res =
                                            dy = 150.0f; }
                                  texture = res.textures.Item "asteroid" })
 
-let enemiesUpdater state (player, (time:GameTime)) =
+let enemiesUpdater state (time:GameTime) =
     state |> List.map (fun enemy ->
         let speed = (float32)(time.ElapsedGameTime.TotalMilliseconds / 1000.0)
         let newLocation = enemy.location + enemy.speed * speed
