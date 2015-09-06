@@ -18,7 +18,5 @@ let pixelPerfectCollision mob1 mob2 =
 
 let collision mob1 mob2 =
     maybe {
-            let! crudeCollision = boundingSphereCollision mob1 mob2
-            // let! preciseCollision = pixelPerfectCollision mob1 mob2
-            return crudeCollision
+            return! boundingSphereCollision mob1 mob2
     }

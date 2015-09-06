@@ -46,5 +46,8 @@ type MaybeBuilder() =
 
     member this.Return(x) = 
         Some x
+
+    member this.ReturnFrom(m) = 
+        m
    
 let maybe = new MaybeBuilder()
