@@ -90,6 +90,7 @@ type Game () as this =
               textures = Map.empty.Add("star", contentManager.Load<Texture2D>("star"))
                                   .Add("player", contentManager.Load<Texture2D>("player"))
                                   .Add("asteroid", contentManager.Load<Texture2D>("asteroid"))
+                                  .Add("laser", contentManager.Load<Texture2D>("laser"))
               fonts = Map.empty.Add("blade-12", contentManager.Load<SpriteFont>("fonts/blade-12"))
                                .Add("blade-48", contentManager.Load<SpriteFont>("fonts/blade-48"))
                                .Add("blade-54", contentManager.Load<SpriteFont>("fonts/blade-54"))
