@@ -17,14 +17,6 @@ let private spawnBullets (playerInput:GameAction []) (player:Mob) state =
                                   texture = null } ]
        else state
 
-/// Move bullets towards top of the screen
-let private moveBullets (gameTime:GameTime) state =
-    List.map (fun bullet -> { bullet with location = bullet.location + bullet.speed * timeCoeff gameTime}) state
-
-/// Remove bullets that are out of screen boundaries
-let private cullBullets state =
-    List.filter (fun bullet -> bullet.location.y > 0.0f) state
-
 /// Render a single bullet
 let private renderBullet res bullet =
     res.spriteBatch.Draw(res.textures.Item "laser", Vector2(bullet.location.x - 48.0f, bullet.location.y - 48.0f), Color.White)
@@ -34,8 +26,8 @@ let private renderBullet res bullet =
 /// Pipeline to handle updating bullets state
 let bulletsUpdater state (playerInput, (player, gameTime)) =
     spawnBullets playerInput player state 
-    |> moveBullets gameTime
-    |> cullBullets
+    |> List.map (fun bullet -> { bullet with location = bullet.location + bullet.speed * timeCoeff gameTime})
+    |> List.filter (fun bullet -> bullet.location.y > 0.0f)
 
 /// Render given bullets state
 let bulletsRenderer bullets res =
