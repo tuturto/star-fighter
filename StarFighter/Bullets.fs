@@ -19,8 +19,7 @@ let private spawnBullets (playerInput:GameAction []) (player:Mob) state =
 
 /// Move bullets towards top of the screen
 let private moveBullets (gameTime:GameTime) state =
-    let speed = (float32)(gameTime.ElapsedGameTime.TotalMilliseconds / 1000.0)
-    List.map (fun bullet -> { bullet with location = bullet.location + bullet.speed * speed }) state
+    List.map (fun bullet -> { bullet with location = bullet.location + bullet.speed * timeCoeff gameTime}) state
 
 /// Remove bullets that are out of screen boundaries
 let private cullBullets state =

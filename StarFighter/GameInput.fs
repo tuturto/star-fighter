@@ -3,6 +3,7 @@
 open System.Reactive.Subjects
 open FSharp.Control.Reactive
 
+open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Input
 open RxNA.Input
 
@@ -23,3 +24,6 @@ let menuTimeStream =
 let gameRunningTimeStream =
     gameTimeStream
     |> Observable.filter (fun x -> gameModeStream.Value = GameRunning)
+
+let timeCoeff (gameTime:GameTime) = 
+    (float32)(gameTime.ElapsedGameTime.TotalMilliseconds / 1000.0)

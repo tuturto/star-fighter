@@ -19,8 +19,7 @@ let initialStarField res =
 
 let starsUpdater state (time:GameTime) =
     state |> List.map (fun star ->
-        let speed = (float32)(time.ElapsedGameTime.TotalMilliseconds / 1000.0)
-        let newLocation = star.location + star.speed * speed
+        let newLocation = star.location + star.speed * timeCoeff time
         let newLocation' = if newLocation.y > 768.0f
                               then { newLocation with y = 0.0f }
                               else newLocation

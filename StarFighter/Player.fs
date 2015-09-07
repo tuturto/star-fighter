@@ -56,7 +56,6 @@ let addMovementActions state action =
     { state with speed = newSpeed }
 
 let playerUpdater (state:Mob) (enemies, ((actions:GameAction []), (time:GameTime))) =
-    let speed = (float32)(time.ElapsedGameTime.TotalMilliseconds / 1000.0)
     let collisionPoints = List.map (collision state) enemies
                           |> List.filter (fun x -> x.IsSome)
     let newState = Array.fold (fun acc item ->
@@ -66,7 +65,7 @@ let playerUpdater (state:Mob) (enemies, ((actions:GameAction []), (time:GameTime
                               state
                               actions
     { newState with location = if List.isEmpty collisionPoints
-                                  then newState.location + newState.speed * speed * 250.0f
+                                  then newState.location + newState.speed * timeCoeff time * 250.0f
                                   else { x = 464.0f; y = 600.0f }}
 
 let playerRenderer state res = 

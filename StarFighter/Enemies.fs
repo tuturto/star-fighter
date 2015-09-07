@@ -21,8 +21,7 @@ let initialEnemies res =
 
 let enemiesUpdater state (time:GameTime) =
     state |> List.map (fun enemy ->
-        let speed = (float32)(time.ElapsedGameTime.TotalMilliseconds / 1000.0)
-        let newLocation = enemy.location + enemy.speed * speed
+        let newLocation = enemy.location + enemy.speed * timeCoeff time
         { enemy with location = if newLocation.y > 768.0f
                                    then { y = -96.0f; x = (float32)(R.NextDouble() * 1024.0) }
                                    else newLocation; })
