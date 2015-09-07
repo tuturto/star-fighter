@@ -69,6 +69,7 @@
     <Compile Include="Stars.fs" />
     <Compile Include="Menu.fs" />
     <Compile Include="Player.fs" />
+    <Compile Include="Bullets.fs" />
     <Compile Include="Enemies.fs" />
     <Compile Include="GameRenderer.fs" />
     <Compile Include="Game.fs" />

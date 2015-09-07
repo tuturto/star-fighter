@@ -14,6 +14,7 @@ open Types
 open Menu
 open Stars
 open Player
+open Bullets
 open Enemies
 
 type Game () as this =
@@ -69,19 +70,32 @@ type Game () as this =
                            |> Observable.zip playerActionStream
                            |> Observable.zip enemiesStream
                            |> Observable.scanInit (initialPlayer renderResources) playerUpdater
+                           |> Observable.publish
+
         let playerFrame = playerStream
                           |> Observable.map mapPlayerToFrame                           
+
+        let bulletStream = gameRunningTimeStream
+                           |> Observable.zip playerStream
+                           |> Observable.zip playerActionStream
+                           |> Observable.scanInit (initialBullets renderResources) bulletsUpdater
+
+        let bulletsFrame = bulletStream
+                           |> Observable.map mapBulletsToFrame
 
         gameRunningRenderStream
         |> Observable.map mapRenderStreamToFrame
         |> Observable.merge playerFrame
+        |> Observable.merge bulletsFrame
         |> Observable.merge enemiesFrame
         |> Observable.merge starFrame
+        |> Observable.merge bulletsFrame
         |> Observable.scanInit initialFrame gameRunningRenderer
         |> Observable.subscribe (fun x -> ())
         |> ignore
 
         enemiesStream.Connect() |> ignore
+        playerStream.Connect() |> ignore
 
     override this.LoadContent() =
         renderResources <-
