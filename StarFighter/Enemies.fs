@@ -30,5 +30,6 @@ let private renderEnemy res enemy =
     res.spriteBatch.Draw(enemy.texture, Vector2(enemy.location.x - 48.0f, enemy.location.y - 48.0f), Color.White)
 
 let enemiesRenderer enemies res =
-    Option.iter (fun state ->
-                    List.iter (renderEnemy res) state) enemies
+    Option.iter 
+    <| List.iter (renderEnemy res)
+    <| enemies

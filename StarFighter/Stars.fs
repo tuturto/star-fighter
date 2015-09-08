@@ -35,5 +35,6 @@ let private renderStar res star =
     res.spriteBatch.Draw(star.texture, Vector2(star.location.x, star.location.y), colour)
 
 let starsRenderer stars res =
-    Option.iter (fun state ->
-                    List.iter (renderStar res) state) stars
+    Option.iter
+    <| List.iter (renderStar res) state)
+    <| stars
