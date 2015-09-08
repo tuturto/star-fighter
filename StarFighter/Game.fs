@@ -77,6 +77,7 @@ type Game () as this =
 
         let bulletStream = gameRunningTimeStream
                            |> Observable.zip playerStream
+                           |> Observable.zip enemiesStream
                            |> Observable.zip playerActionStream
                            |> Observable.scanInit (initialBullets renderResources) bulletsUpdater
 

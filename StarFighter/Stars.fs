@@ -36,5 +36,5 @@ let private renderStar res star =
 
 let starsRenderer stars res =
     Option.iter
-    <| List.iter (renderStar res) state)
+    <| List.iter (renderStar res)
     <| stars

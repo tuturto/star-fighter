@@ -24,7 +24,7 @@ let private renderBullet res bullet =
 
 
 /// Pipeline to handle updating bullets state
-let bulletsUpdater state (playerInput, (player, gameTime)) =
+let bulletsUpdater state (playerInput, (enemies, (player, gameTime))) =
     spawnBullets playerInput player state 
     |> List.map (fun bullet -> { bullet with location = bullet.location + bullet.speed * timeCoeff gameTime})
     |> List.filter (fun bullet -> bullet.location.y > 0.0f)
