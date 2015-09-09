@@ -1,6 +1,9 @@
 ﻿module Collisions
 
+open ExtCore.Control.WorkflowBuilders
+
 open Types
+
 
 let boundingSphereCollision (mob1:Mob) (mob2:Mob) =
     let dx = mob1.location.x - mob2.location.x 

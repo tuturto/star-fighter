@@ -36,18 +36,3 @@ let R = System.Random()
 
 /// Current mode of the game
 let gameModeStream = new BehaviorSubject<GameMode>(Menu)
-
-type MaybeBuilder() =
-
-    member this.Bind(x, f) = 
-        match x with
-        | None -> None
-        | Some a -> f a
-
-    member this.Return(x) = 
-        Some x
-
-    member this.ReturnFrom(m) = 
-        m
-   
-let maybe = new MaybeBuilder()
