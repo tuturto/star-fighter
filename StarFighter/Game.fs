@@ -79,7 +79,7 @@ type Game () as this =
                            |> Observable.zip playerStream
                            |> Observable.zip enemiesStream
                            |> Observable.zip playerActionStream
-                           |> Observable.scanInit (initialBullets renderResources) bulletsUpdater
+                           |> Observable.scanInit (initialBullets renderResources) (bulletsUpdater renderResources)
 
         let bulletsFrame = bulletStream
                            |> Observable.map mapBulletsToFrame

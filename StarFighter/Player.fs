@@ -70,4 +70,7 @@ let playerUpdater (state:Mob) (enemies, ((actions:GameAction []), (time:GameTime
 
 let playerRenderer state res = 
     Option.iter (fun player ->
-                    res.spriteBatch.Draw(player.texture, Vector2(player.location.x - 48.0f, player.location.y - 48.0f), Color.White)) state
+                    res.spriteBatch.Draw(player.texture, 
+                                         Vector2(player.location.x - (float32)player.texture.Width / 2.0f, 
+                                                 player.location.y - (float32)player.texture.Height / 2.0f), 
+                                         Color.White)) state

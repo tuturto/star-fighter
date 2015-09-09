@@ -11,16 +11,17 @@ open GameInput
 let initialBullets renderResources = List.Empty
 
 /// Spawn new bullets if player is currently shooting
-let private spawnBullets (playerInput:GameAction []) (player:Mob) state =
+let private spawnBullets res (playerInput:GameAction []) (player:Mob) state =
     if Array.exists (fun x -> x = Attack) playerInput
        then List.append state [ { location = player.location;
                                   speed = { dx = 0.0f; dy = -750.0f };
-                                  texture = null } ]
+                                  texture = res.textures.Item "laser" } ]
        else state
 
 /// Render a single bullet
 let private renderBullet res bullet =
-    res.spriteBatch.Draw(res.textures.Item "laser", Vector2(bullet.location.x - 48.0f, bullet.location.y - 48.0f), Color.White)
+    let texture = bullet.texture
+    res.spriteBatch.Draw(texture, Vector2(bullet.location.x - (float32)texture.Width / 2.0f, bullet.location.y - (float32)texture.Height / 2.0f), Color.White)
 
 /// Does given bullet intersect with any of the enemies?
 let isHit bullet enemies =
@@ -29,8 +30,8 @@ let isHit bullet enemies =
          |> List.isEmpty)
 
 /// Pipeline to handle updating bullets state
-let bulletsUpdater state (playerInput, (enemies, (player, gameTime))) =
-    spawnBullets playerInput player state 
+let bulletsUpdater (res:RenderResources) state (playerInput, (enemies, (player, gameTime))) =
+    spawnBullets res playerInput player state 
     |> List.map (fun bullet -> { bullet with location = bullet.location + bullet.speed * timeCoeff gameTime})
     |> List.filter (fun bullet -> bullet.location.y > 0.0f)
     |> List.filter (fun bullet -> not <| isHit bullet enemies)
