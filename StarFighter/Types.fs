@@ -32,7 +32,14 @@ type Mob = { location: Location
              speed: Speed
              texture: Texture2D }
 
+type BulletCollisionInfo = 
+     | Enemy of enemy : Mob * bullet : Mob
+     | NoCollision of bullet : Mob
+
 let R = System.Random()
 
 /// Current mode of the game
 let gameModeStream = new BehaviorSubject<GameMode>(Menu)
+
+let enemyBulletCollisions = 
+    new System.Reactive.Subjects.BehaviorSubject<BulletCollisionInfo list>([])

@@ -2,6 +2,7 @@
 
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics 
+open ExtCore.Collections
 
 open RxNA.Renderer
 open Types
@@ -29,12 +30,35 @@ let isHit bullet enemies =
          |> List.filter Option.isSome
          |> List.isEmpty)
 
+let checkCollisions enemies bullet =
+    let collData = List.map (fun enemy -> 
+                        let coll = collision bullet enemy
+                        if coll.IsNone
+                           then NoCollision bullet
+                           else Enemy (enemy, bullet)) enemies
+                   |> List.filter (function
+                                       | NoCollision _ -> false
+                                       | Enemy (_, _) -> true)
+    if List.isEmpty collData
+       then NoCollision bullet
+       else List.last collData
+
 /// Pipeline to handle updating bullets state
 let bulletsUpdater (res:RenderResources) state (playerInput, (enemies, (player, gameTime))) =
     spawnBullets res playerInput player state 
     |> List.map (fun bullet -> { bullet with location = bullet.location + bullet.speed * timeCoeff gameTime})
     |> List.filter (fun bullet -> bullet.location.y > 0.0f)
-    |> List.filter (fun bullet -> not <| isHit bullet enemies)
+    |> List.map (checkCollisions enemies)
+    |> tap (fun x -> List.filter (function
+                                      | NoCollision _ -> false
+                                      | Enemy (_, _) -> true) x
+                     |> enemyBulletCollisions.OnNext)
+    |> List.filter (function
+                        | NoCollision _ -> true
+                        | Enemy (_, _) -> false)
+    |> List.map (function
+                     | NoCollision bullet -> bullet
+                     | Enemy (_, bullet) -> bullet)
 
 /// Render given bullets state
 let bulletsRenderer bullets res =

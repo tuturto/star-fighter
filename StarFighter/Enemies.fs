@@ -20,14 +20,18 @@ let initialEnemies res =
                                  texture = res.textures.Item "asteroid" })
 
 let enemiesUpdater state (time:GameTime) =
-    state |> List.map (fun enemy ->
-        let newLocation = enemy.location + enemy.speed * timeCoeff time
-        { enemy with location = if newLocation.y > 768.0f
-                                   then { y = -96.0f; x = (float32)(R.NextDouble() * 1024.0) }
-                                   else newLocation; })
+    state 
+    |> List.map (fun enemy ->
+                    let newLocation = enemy.location + enemy.speed * timeCoeff time
+                    { enemy with location = if newLocation.y > 768.0f
+                                               then { y = -96.0f; x = (float32)(R.NextDouble() * 1024.0) }
+                                               else newLocation; })
 
 let private renderEnemy res enemy =
-    res.spriteBatch.Draw(enemy.texture, Vector2(enemy.location.x - (float32)enemy.texture.Width / 2.0f, enemy.location.y - (float32)enemy.texture.Height / 2.0f), Color.White)
+    res.spriteBatch.Draw(enemy.texture, 
+                         Vector2(enemy.location.x - (float32)enemy.texture.Width / 2.0f, 
+                                 enemy.location.y - (float32)enemy.texture.Height / 2.0f), 
+                         Color.White)
 
 let enemiesRenderer enemies res =
     Option.iter 
