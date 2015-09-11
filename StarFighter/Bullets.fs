@@ -35,10 +35,10 @@ let checkCollisions enemies bullet =
                         let coll = collision bullet enemy
                         if coll.IsNone
                            then NoCollision bullet
-                           else Enemy (enemy, bullet)) enemies
+                           else EnemyCollision (enemy, bullet)) enemies
                    |> List.filter (function
                                        | NoCollision _ -> false
-                                       | Enemy (_, _) -> true)
+                                       | EnemyCollision (_, _) -> true)
     if List.isEmpty collData
        then NoCollision bullet
        else List.last collData
@@ -51,9 +51,10 @@ let bulletsUpdater (res:RenderResources) state (playerInput, (enemies, (player, 
     |> List.map (checkCollisions enemies)
     |> tap (fun x -> List.filter (function
                                       | NoCollision _ -> false
-                                      | Enemy (_, _) -> true) x
+                                      | EnemyCollision (_, _) -> true) x
                      |> enemyBulletCollisions.OnNext)
-    |> unCollidedBullets
+    |> List.filter (fun bullet -> not (bullet.Collided))
+    |> List.map (fun bullet -> bullet.Bullet)
 
 /// Render given bullets state
 let bulletsRenderer bullets res =

@@ -33,26 +33,20 @@ type Mob = { location: Location
              texture: Texture2D }
 
 type BulletCollisionInfo = 
-     | Enemy of enemy : Mob * bullet : Mob
+     | EnemyCollision of enemy : Mob * bullet : Mob
      | NoCollision of bullet : Mob
-
-let collidedBullets collisionInfo = 
-    collisionInfo
-    |> List.filter (function
-                       | NoCollision _ -> false
-                       | Enemy (_, _) -> true)
-    |> List.map (function
-                    | NoCollision bullet -> bullet
-                    | Enemy (enemy, _) -> enemy)
-
-let unCollidedBullets collisionInfo =
-    collisionInfo
-    |> List.filter (function
-                        | NoCollision _ -> true
-                        | Enemy (_, _) -> false)
-    |> List.map (function
-                     | NoCollision bullet -> bullet
-                     | Enemy (_, bullet) -> bullet)
+     member this.Collided =
+        match this with
+            | EnemyCollision (_, _) -> true
+            | NoCollision _ -> false
+     member this.Bullet =
+        match this with
+            | EnemyCollision (_, bullet) -> bullet
+            | NoCollision bullet -> bullet
+     member this.Enemy =
+        match this with
+            | EnemyCollision (enemy, _) -> Some enemy
+            | NoCollision _ -> None
 
 let R = System.Random()
 

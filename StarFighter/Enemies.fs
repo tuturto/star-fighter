@@ -20,9 +20,12 @@ let initialEnemies res =
                                  texture = res.textures.Item "asteroid" })
 
 let enemiesUpdater state (time:GameTime) =
-    let collided = collidedBullets enemyBulletCollisions.Value 
+    let collided = enemyBulletCollisions.Value
+                   |> List.map (fun x -> x.Enemy)
+                   |> List.filter (fun x -> x.IsSome)
+                   |> List.map (fun x -> x.Value)
     state 
-    |> List.filter (fun bullet -> not (List.contains bullet collided))
+    |> List.filter (fun enemy -> not (List.contains enemy collided))
     |> List.map (fun enemy ->
                     let newLocation = enemy.location + enemy.speed * timeCoeff time
                     { enemy with location = if newLocation.y > 768.0f
