@@ -53,12 +53,7 @@ let bulletsUpdater (res:RenderResources) state (playerInput, (enemies, (player, 
                                       | NoCollision _ -> false
                                       | Enemy (_, _) -> true) x
                      |> enemyBulletCollisions.OnNext)
-    |> List.filter (function
-                        | NoCollision _ -> true
-                        | Enemy (_, _) -> false)
-    |> List.map (function
-                     | NoCollision bullet -> bullet
-                     | Enemy (_, bullet) -> bullet)
+    |> unCollidedBullets
 
 /// Render given bullets state
 let bulletsRenderer bullets res =
