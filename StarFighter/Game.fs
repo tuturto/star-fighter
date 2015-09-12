@@ -99,16 +99,17 @@ type Game () as this =
         playerStream.Connect() |> ignore
 
     override this.LoadContent() =
+        let texture = loadTexture contentManager
         renderResources <-
             { RxNA.Renderer.RenderResources.graphics = this.GraphicsDevice;
               spriteBatch = new SpriteBatch(this.GraphicsDevice);
-              textures = Map.empty.Add("star", contentManager.Load<Texture2D>("star"))
-                                  .Add("player", contentManager.Load<Texture2D>("player"))
-                                  .Add("asteroid", contentManager.Load<Texture2D>("asteroid"))
-                                  .Add("laser", contentManager.Load<Texture2D>("laser"))
-                                  .Add("small_explosion_f1", contentManager.Load<Texture2D>("small_explosion_f1"))
-                                  .Add("small_explosion_f2", contentManager.Load<Texture2D>("small_explosion_f2"))
-                                  .Add("small_explosion_f3", contentManager.Load<Texture2D>("small_explosion_f3"))
+              textures = Map.empty.Add("star", texture "star")
+                                  .Add("player", texture "player")
+                                  .Add("asteroid", texture "asteroid")
+                                  .Add("laser", texture "laser")
+                                  .Add("small_explosion_f1", texture "small_explosion_f1")
+                                  .Add("small_explosion_f2", texture "small_explosion_f2")
+                                  .Add("small_explosion_f3", texture "small_explosion_f3")
               fonts = Map.empty.Add("blade-12", contentManager.Load<SpriteFont>("fonts/blade-12"))
                                .Add("blade-48", contentManager.Load<SpriteFont>("fonts/blade-48"))
                                .Add("blade-54", contentManager.Load<SpriteFont>("fonts/blade-54"))

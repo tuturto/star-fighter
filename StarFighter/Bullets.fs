@@ -21,18 +21,18 @@ let private spawnBullets res (playerInput:GameAction []) (player:Mob) state =
 
 /// Render a single bullet
 let private renderBullet res bullet =
-    let texture = bullet.texture
+    let texture = currentFrame res.gameTime bullet.texture 
     res.spriteBatch.Draw(texture, Vector2(bullet.location.x - (float32)texture.Width / 2.0f, bullet.location.y - (float32)texture.Height / 2.0f), Color.White)
 
 /// Does given bullet intersect with any of the enemies?
-let isHit bullet enemies =
-    not (List.map (fun enemy -> collision bullet enemy) enemies
+let isHit gameTime bullet enemies =
+    not (List.map (fun enemy -> collision gameTime bullet enemy) enemies
          |> List.filter Option.isSome
          |> List.isEmpty)
 
-let checkCollisions enemies bullet =
+let checkCollisions gameTime enemies bullet =
     let collData = List.map (fun enemy -> 
-                        let coll = collision bullet enemy
+                        let coll = collision gameTime bullet enemy
                         if coll.IsNone
                            then NoCollision bullet
                            else EnemyCollision (enemy, bullet)) enemies
@@ -48,7 +48,7 @@ let bulletsUpdater (res:RenderResources) state (playerInput, (enemies, (player, 
     spawnBullets res playerInput player state 
     |> List.map (fun bullet -> { bullet with location = bullet.location + bullet.speed * timeCoeff gameTime})
     |> List.filter (fun bullet -> bullet.location.y > 0.0f)
-    |> List.map (checkCollisions enemies)
+    |> List.map (checkCollisions res.gameTime enemies)
     |> tap (fun x -> List.filter (function
                                       | NoCollision _ -> false
                                       | EnemyCollision (_, _) -> true) x

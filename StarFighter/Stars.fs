@@ -32,7 +32,7 @@ let private renderStar res star =
                      | { Mob.speed = speed } when speed.dy <= 75.0f -> Color.CornflowerBlue  
                      | { Mob.speed = speed } when speed.dy <= 100.0f -> Color.LightBlue 
                      | _ -> Color.White
-    res.spriteBatch.Draw(star.texture, Vector2(star.location.x, star.location.y), colour)
+    res.spriteBatch.Draw(currentFrame res.gameTime star.texture, Vector2(star.location.x, star.location.y), colour)
 
 let starsRenderer stars res =
     Option.iter

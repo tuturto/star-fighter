@@ -56,7 +56,7 @@ let addMovementActions state action =
     { state with speed = newSpeed }
 
 let playerUpdater (state:Mob) (enemies, ((actions:GameAction []), (time:GameTime))) =
-    let collisionPoints = List.map (collision state) enemies
+    let collisionPoints = List.map (collision time state) enemies
                           |> List.filter (fun x -> x.IsSome)
     let newState = Array.fold (fun acc item ->
                                     match item with
@@ -70,7 +70,8 @@ let playerUpdater (state:Mob) (enemies, ((actions:GameAction []), (time:GameTime
 
 let playerRenderer state res = 
     Option.iter (fun player ->
-                    res.spriteBatch.Draw(player.texture, 
-                                         Vector2(player.location.x - (float32)player.texture.Width / 2.0f, 
-                                                 player.location.y - (float32)player.texture.Height / 2.0f), 
+                    let texture = currentFrame res.gameTime player.texture 
+                    res.spriteBatch.Draw(texture, 
+                                         Vector2(player.location.x - (float32)texture.Width / 2.0f, 
+                                                 player.location.y - (float32)texture.Height / 2.0f), 
                                          Color.White)) state

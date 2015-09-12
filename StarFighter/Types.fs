@@ -2,6 +2,7 @@
 
 open System.Reactive.Subjects 
 open Microsoft.Xna.Framework.Graphics
+open RxNA.Renderer
 
 type GameMode =
     | Menu
@@ -30,7 +31,7 @@ type Location =
 
 type Mob = { location: Location
              speed: Speed
-             texture: Texture2D }
+             texture: Texture }
 
 type BulletCollisionInfo = 
      | EnemyCollision of enemy : Mob * bullet : Mob

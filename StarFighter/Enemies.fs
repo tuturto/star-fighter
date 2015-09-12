@@ -33,9 +33,10 @@ let enemiesUpdater state (time:GameTime) =
                                                else newLocation; })
 
 let private renderEnemy res enemy =
-    res.spriteBatch.Draw(enemy.texture, 
-                         Vector2(enemy.location.x - (float32)enemy.texture.Width / 2.0f, 
-                                 enemy.location.y - (float32)enemy.texture.Height / 2.0f), 
+    let texture = currentFrame res.gameTime enemy.texture
+    res.spriteBatch.Draw(texture , 
+                         Vector2(enemy.location.x - (float32)texture.Width / 2.0f, 
+                                 enemy.location.y - (float32)texture.Height / 2.0f), 
                          Color.White)
 
 let enemiesRenderer enemies res =
