@@ -34,8 +34,12 @@ let render (res:RenderResources) =
 
 let loadTexture (contentManager:ContentManager) resourceName =
     SingleFrame(contentManager.Load<Texture2D>(resourceName))
-    
-let currentFrame gameTime texture =
+
+let loadAnimationFrame (contentManager:ContentManager) resourceName duration =
+    AnimationFrame(contentManager.Load<Texture2D>(resourceName), duration)
+
+let rec currentFrame gameTime texture =
     match texture with
         | SingleFrame t -> t
-        | _ -> failwith "not supported"
+        | Animation (frames, start) -> currentFrame gameTime <| List.last frames
+        | AnimationFrame (t, _) -> t
