@@ -17,7 +17,7 @@ let initialEnemies res =
                                               y = (float32)(R.NextDouble()) * 768.0f; }
                                  speed = { dx = 0.0f;
                                            dy = 150.0f; }
-                                 texture = res.textures.Item "asteroid" })
+                                 texture = convert res.gameTime <| res.textures.Item "asteroid" })
 
 let enemiesUpdater state (time:GameTime) =
     let collided = enemyBulletCollisions.Value

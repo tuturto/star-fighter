@@ -12,11 +12,11 @@ open GameInput
 let initialBullets renderResources = List.Empty
 
 /// Spawn new bullets if player is currently shooting
-let private spawnBullets res (playerInput:GameAction []) (player:Mob) state =
+let private spawnBullets res gameTime (playerInput:GameAction []) (player:Mob) state =
     if Array.exists (fun x -> x = Attack) playerInput
        then List.append state [ { location = player.location;
                                   speed = { dx = 0.0f; dy = -750.0f };
-                                  texture = res.textures.Item "laser" } ]
+                                  texture = convert gameTime <| res.textures.Item "laser" } ]
        else state
 
 /// Render a single bullet
@@ -45,10 +45,10 @@ let checkCollisions gameTime enemies bullet =
 
 /// Pipeline to handle updating bullets state
 let bulletsUpdater (res:RenderResources) state (playerInput, (enemies, (player, gameTime))) =
-    spawnBullets res playerInput player state 
+    spawnBullets res gameTime playerInput player state 
     |> List.map (fun bullet -> { bullet with location = bullet.location + bullet.speed * timeCoeff gameTime})
     |> List.filter (fun bullet -> bullet.location.y > 0.0f)
-    |> List.map (checkCollisions res.gameTime enemies)
+    |> List.map (checkCollisions gameTime enemies)
     |> tap (fun x -> List.filter (function
                                       | NoCollision _ -> false
                                       | EnemyCollision (_, _) -> true) x

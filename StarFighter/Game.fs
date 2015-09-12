@@ -107,9 +107,9 @@ type Game () as this =
                                   .Add("player", texture "player")
                                   .Add("asteroid", texture "asteroid")
                                   .Add("laser", texture "laser")
-                                  .Add("small explosion f1", loadAnimationFrame contentManager "small_explosion_f1" 100.0)
-                                  .Add("small explosion f2", loadAnimationFrame contentManager "small_explosion_f2" 100.0)
-                                  .Add("small explosion f3", loadAnimationFrame contentManager "small_explosion_f3" 100.0)
+                                  .Add("small explosion", Animation [ loadAnimationFrame contentManager "small_explosion_f1" 250.0;
+                                                                      loadAnimationFrame contentManager "small_explosion_f2" 500.0;
+                                                                      loadAnimationFrame contentManager "small_explosion_f3" 750.0; ])
               fonts = Map.empty.Add("blade-12", contentManager.Load<SpriteFont>("fonts/blade-12"))
                                .Add("blade-48", contentManager.Load<SpriteFont>("fonts/blade-48"))
                                .Add("blade-54", contentManager.Load<SpriteFont>("fonts/blade-54"))
@@ -123,4 +123,5 @@ type Game () as this =
         RxNA.Input.gameTimeStream.OnNext(gameTime)
 
     override this.Draw (gameTime) =
-        RxNA.Renderer.render {renderResources with gameTime = gameTime}
+        renderResources <- { renderResources with gameTime = gameTime }
+        RxNA.Renderer.render renderResources
