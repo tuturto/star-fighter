@@ -51,11 +51,6 @@ let currentFrame (gameTime:GameTime) texture =
         | SingleFrame (t, d) -> t
         | MultipleFrames (frames, start) -> 
             let currentTime = gameTime.TotalGameTime.TotalMilliseconds - start
-            System.Diagnostics.Debug.Write start
-            System.Diagnostics.Debug.Write " "
-            System.Diagnostics.Debug.Write gameTime.TotalGameTime.TotalMilliseconds
-            System.Diagnostics.Debug.Write " "
-            System.Diagnostics.Debug.WriteLine currentTime
             frames
             |> List.fold (fun (state:Texture option) frame -> 
                             match state with
