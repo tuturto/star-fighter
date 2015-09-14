@@ -122,6 +122,11 @@ type Game () as this =
                                   .Add("small explosion", Animation [ loadAnimationFrame contentManager "small_explosion_f1" 200.0;
                                                                       loadAnimationFrame contentManager "small_explosion_f2" 400.0;
                                                                       loadAnimationFrame contentManager "small_explosion_f3" 600.0; ])
+                                  .Add("large explosion", Animation [ loadAnimationFrame contentManager "large_explosion_f1" 100.0;
+                                                                      loadAnimationFrame contentManager "large_explosion_f2" 200.0;
+                                                                      loadAnimationFrame contentManager "large_explosion_f3" 300.0;
+                                                                      loadAnimationFrame contentManager "large_explosion_f4" 400.0;
+                                                                      loadAnimationFrame contentManager "large_explosion_f5" 500.0; ])
               fonts = Map.empty.Add("blade-12", contentManager.Load<SpriteFont>("fonts/blade-12"))
                                .Add("blade-48", contentManager.Load<SpriteFont>("fonts/blade-48"))
                                .Add("blade-54", contentManager.Load<SpriteFont>("fonts/blade-54"))

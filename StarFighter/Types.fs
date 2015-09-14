@@ -58,7 +58,7 @@ let collisionToMob res time (info:BulletCollisionInfo) =
     let enemy = info.Enemy.Value 
     { location = enemy.location;
       speed = enemy.speed;
-      texture = convert time <| res.textures.Item "small explosion" }
+      texture = convert time <| res.textures.Item "large explosion" }
 
 let R = System.Random()
 

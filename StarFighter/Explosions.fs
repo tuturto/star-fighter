@@ -34,8 +34,10 @@ let private renderExplosion res time explosion =
     match isFinished explosion.texture time with
         | true -> ()
         | false ->
-            res.spriteBatch.Draw(currentFrame time explosion.texture,
-                                 Vector2(explosion.location.x, explosion.location.y), Color.White)
+            let texture = currentFrame time explosion.texture
+            res.spriteBatch.Draw(texture,
+                                 Vector2(explosion.location.x - (float32)texture.Width / 2.0f,
+                                         explosion.location.y - (float32)texture.Height / 2.0f), Color.White)
 
 let explosionRenderer explosions res time =
     Option.iter
