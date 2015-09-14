@@ -16,8 +16,10 @@ type Texture =
      | MultipleFrames of frames: Texture list * start: float
      member this.Duration =
         match this with
-            | SingleFrame (t, d) -> d
-            | MultipleFrames (_, _) -> None
+            | SingleFrame (t, (Some d)) -> d
+            | SingleFrame (t, None) -> 0.0
+            | MultipleFrames (t, _) -> List.map (fun (frame:Texture) -> frame.Duration) t
+                                       |> List.max
 
 type TextureMap = Map<string, TextureSpecification>
 type FontMap = Map<string, SpriteFont>
@@ -27,16 +29,15 @@ type RenderResources = {
     graphics: GraphicsDevice;
     spriteBatch: SpriteBatch;
     textures: TextureMap;
-    fonts: FontMap;
-    gameTime: GameTime }
+    fonts: FontMap; }
 
 let renderStream =
-    new Subject<RenderResources>()
+    new Subject<RenderResources * GameTime>()
 
-let render (res:RenderResources) =
+let render (res:RenderResources) (time:GameTime) =
     res.graphics.Clear(Color.Black)
     res.spriteBatch.Begin()
-    renderStream.OnNext(res)
+    renderStream.OnNext((res, time))
     res.spriteBatch.End()
 
 let loadTexture (contentManager:ContentManager) resourceName =
@@ -50,21 +51,31 @@ let currentFrame (gameTime:GameTime) texture =
         | SingleFrame (t, d) -> t
         | MultipleFrames (frames, start) -> 
             let currentTime = gameTime.TotalGameTime.TotalMilliseconds - start
+            System.Diagnostics.Debug.Write start
+            System.Diagnostics.Debug.Write " "
+            System.Diagnostics.Debug.Write gameTime.TotalGameTime.TotalMilliseconds
+            System.Diagnostics.Debug.Write " "
             System.Diagnostics.Debug.WriteLine currentTime
             frames
             |> List.fold (fun (state:Texture option) frame -> 
                             match state with
-                                | None -> if frame.Duration.Value > currentTime
+                                | None -> if frame.Duration > currentTime
                                              then Some frame
                                              else None
                                 | Some t -> Some t) None
             |> function
                    | Some (SingleFrame (t, _)) -> t
                    | _ -> failwith "failed to retrieve frame"
-            
         
-let rec convert (time:GameTime) textureSpec =
+let rec convert (gameTime:GameTime) textureSpec =
     match textureSpec with
         | Infinite t -> SingleFrame (t, None)
         | Timed (t, d) -> SingleFrame (t, Some d)
-        | Animation frames -> MultipleFrames ( List.map (fun x -> convert time x) frames, time.TotalGameTime.TotalMilliseconds )
+        | Animation frames -> 
+            let frameList = List.map (convert gameTime) frames
+            MultipleFrames (frameList, gameTime.TotalGameTime.TotalMilliseconds)
+
+let isFinished animation (gameTime:GameTime) =
+    match animation with
+        | SingleFrame _ -> false
+        | MultipleFrames (frames, start) -> gameTime.TotalGameTime.TotalMilliseconds - start > animation.Duration 

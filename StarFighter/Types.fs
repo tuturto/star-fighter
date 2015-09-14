@@ -1,6 +1,7 @@
 ﻿module Types
 
 open System.Reactive.Subjects 
+open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
 open RxNA.Renderer
 
@@ -34,20 +35,30 @@ type Mob = { location: Location
              texture: Texture }
 
 type BulletCollisionInfo = 
-     | EnemyCollision of enemy : Mob * bullet : Mob
-     | NoCollision of bullet : Mob
+     | EnemyCollision of enemy : Mob * bullet : Mob * time : GameTime
+     | NoCollision of bullet : Mob * time : GameTime
      member this.Collided =
         match this with
-            | EnemyCollision (_, _) -> true
+            | EnemyCollision _ -> true
             | NoCollision _ -> false
      member this.Bullet =
         match this with
-            | EnemyCollision (_, bullet) -> bullet
-            | NoCollision bullet -> bullet
+            | EnemyCollision (_, bullet, _) -> bullet
+            | NoCollision (bullet, _) -> bullet
      member this.Enemy =
         match this with
-            | EnemyCollision (enemy, _) -> Some enemy
+            | EnemyCollision (enemy, _, _) -> Some enemy
             | NoCollision _ -> None
+     member this.Time =
+        match this with
+            | EnemyCollision (_, _, time) -> time
+            | NoCollision (_, time) -> time
+
+let collisionToMob res time (info:BulletCollisionInfo) =
+    let enemy = info.Enemy.Value 
+    { location = enemy.location;
+      speed = enemy.speed;
+      texture = convert time <| res.textures.Item "small explosion" }
 
 let R = System.Random()
 

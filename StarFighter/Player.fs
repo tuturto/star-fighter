@@ -39,12 +39,12 @@ let playerActionStream = playerActionStreamKeys
                          |> Observable.zip playerActionStreamPad 
                          |> Observable.map (fun (a, b) -> Array.concat [a; b])
 
-let initialPlayer res = 
+let initialPlayer res time = 
     { location = { x = 464.0f;
                    y = 600.0f; }
       speed = { dx = 0.0f;
                 dy = 0.0f; }
-      texture = convert res.gameTime <| res.textures.Item "player" } 
+      texture = convert time <| res.textures.Item "player" } 
 
 let addMovementActions state action =
     let newSpeed = match action with
@@ -68,9 +68,9 @@ let playerUpdater (state:Mob) (enemies, ((actions:GameAction []), (time:GameTime
                                   then newState.location + newState.speed * timeCoeff time * 250.0f
                                   else { x = 464.0f; y = 600.0f }}
 
-let playerRenderer state res = 
+let playerRenderer state res time = 
     Option.iter (fun player ->
-                    let texture = currentFrame res.gameTime player.texture 
+                    let texture = currentFrame time player.texture 
                     res.spriteBatch.Draw(texture, 
                                          Vector2(player.location.x - (float32)texture.Width / 2.0f, 
                                                  player.location.y - (float32)texture.Height / 2.0f), 

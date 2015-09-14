@@ -66,6 +66,7 @@
     <Compile Include="Types.fs" />
     <Compile Include="Collisions.fs" />
     <Compile Include="GameInput.fs" />
+    <Compile Include="Explosions.fs" />
     <Compile Include="Stars.fs" />
     <Compile Include="Menu.fs" />
     <Compile Include="Player.fs" />

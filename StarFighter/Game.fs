@@ -16,6 +16,7 @@ open Stars
 open Player
 open Bullets
 open Enemies
+open Explosions
 
 type Game () as this =
     inherit Microsoft.Xna.Framework.Game()
@@ -26,14 +27,15 @@ type Game () as this =
         { RxNA.Renderer.RenderResources.graphics = null;
           spriteBatch = null;
           textures = Map.empty;
-          fonts = Map.empty;
-          gameTime = null }
+          fonts = Map.empty; }
 
     override this.Initialize() =
         base.Initialize()
         do graphics.PreferredBackBufferWidth <- 1024
         do graphics.PreferredBackBufferHeight <- 768
         do graphics.ApplyChanges()
+
+        let time = new GameTime()
 
         gameModeStream
         |> Observable.add
@@ -44,11 +46,11 @@ type Game () as this =
 
         let starFrame = menuTimeStream
                         |> Observable.merge gameRunningTimeStream
-                        |> Observable.scanInit (initialStarField renderResources) starsUpdater
+                        |> Observable.scanInit (initialStarField renderResources time) starsUpdater
                         |> Observable.map mapStarsToFrame
 
         let menuFrame = menuTimeStream
-                        |> Observable.scanInit (initialMenu renderResources) menuUpdater
+                        |> Observable.scanInit (initialMenu renderResources time) menuUpdater
                         |> Observable.map mapMenuToFrame
 
         menuRenderStream
@@ -60,7 +62,7 @@ type Game () as this =
         |> ignore
 
         let enemiesStream = gameRunningTimeStream
-                            |> Observable.scanInit (initialEnemies renderResources) enemiesUpdater
+                            |> Observable.scanInit (initialEnemies renderResources time) enemiesUpdater
                             |> Observable.publish 
 
         let enemiesFrame = enemiesStream
@@ -69,7 +71,7 @@ type Game () as this =
         let playerStream = gameRunningTimeStream
                            |> Observable.zip playerActionStream
                            |> Observable.zip enemiesStream
-                           |> Observable.scanInit (initialPlayer renderResources) playerUpdater
+                           |> Observable.scanInit (initialPlayer renderResources time) playerUpdater
                            |> Observable.publish
 
         let playerFrame = playerStream
@@ -81,8 +83,17 @@ type Game () as this =
                            |> Observable.zip playerActionStream
                            |> Observable.scanInit (initialBullets renderResources) (bulletsUpdater renderResources)
 
-        let bulletsFrame = bulletStream
+        let bulletsFrame = bulletStream                           
                            |> Observable.map mapBulletsToFrame
+
+        let explosionStream = gameRunningTimeStream
+                              |> Observable.map mapGameTimeToExplosions
+                              |> Observable.merge (enemyBulletCollisions
+                                                   |> Observable.map mapCollisionsToExplosions)
+                              |> Observable.scanInit (initialExplosions renderResources) (explosionUpdater renderResources)
+
+        let explosionFrame = explosionStream
+                             |> Observable.map mapExplosionsToFrame
 
         gameRunningRenderStream
         |> Observable.map mapRenderStreamToFrame
@@ -91,6 +102,7 @@ type Game () as this =
         |> Observable.merge enemiesFrame
         |> Observable.merge starFrame
         |> Observable.merge bulletsFrame
+        |> Observable.merge explosionFrame
         |> Observable.scanInit initialFrame gameRunningRenderer
         |> Observable.subscribe (fun x -> ())
         |> ignore
@@ -107,14 +119,13 @@ type Game () as this =
                                   .Add("player", texture "player")
                                   .Add("asteroid", texture "asteroid")
                                   .Add("laser", texture "laser")
-                                  .Add("small explosion", Animation [ loadAnimationFrame contentManager "small_explosion_f1" 250.0;
-                                                                      loadAnimationFrame contentManager "small_explosion_f2" 500.0;
-                                                                      loadAnimationFrame contentManager "small_explosion_f3" 750.0; ])
+                                  .Add("small explosion", Animation [ loadAnimationFrame contentManager "small_explosion_f1" 200.0;
+                                                                      loadAnimationFrame contentManager "small_explosion_f2" 400.0;
+                                                                      loadAnimationFrame contentManager "small_explosion_f3" 600.0; ])
               fonts = Map.empty.Add("blade-12", contentManager.Load<SpriteFont>("fonts/blade-12"))
                                .Add("blade-48", contentManager.Load<SpriteFont>("fonts/blade-48"))
                                .Add("blade-54", contentManager.Load<SpriteFont>("fonts/blade-54"))
-                               .Add("blade-72", contentManager.Load<SpriteFont>("fonts/blade-72"))                               
-              gameTime = null }
+                               .Add("blade-72", contentManager.Load<SpriteFont>("fonts/blade-72")) }
 
     override this.Update gameTime =
         RxNA.Input.mouseStateStream.OnNext(Mouse.GetState())
@@ -123,5 +134,4 @@ type Game () as this =
         RxNA.Input.gameTimeStream.OnNext(gameTime)
 
     override this.Draw (gameTime) =
-        renderResources <- { renderResources with gameTime = gameTime }
-        RxNA.Renderer.render renderResources
+        RxNA.Renderer.render renderResources gameTime

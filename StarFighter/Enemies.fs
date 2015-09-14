@@ -12,12 +12,12 @@ open RxNA.Renderer
 open RxNA.Input 
 open GameInput
 
-let initialEnemies res =
+let initialEnemies res time =
     List.init 10 (fun index -> { location = { x = (float32)(R.NextDouble()) * 1024.0f; 
                                               y = (float32)(R.NextDouble()) * 768.0f; }
                                  speed = { dx = 0.0f;
                                            dy = 150.0f; }
-                                 texture = convert res.gameTime <| res.textures.Item "asteroid" })
+                                 texture = convert time <| res.textures.Item "asteroid" })
 
 let enemiesUpdater state (time:GameTime) =
     let collided = enemyBulletCollisions.Value
@@ -32,14 +32,14 @@ let enemiesUpdater state (time:GameTime) =
                                                then { y = -96.0f; x = (float32)(R.NextDouble() * 1024.0) }
                                                else newLocation; })
 
-let private renderEnemy res enemy =
-    let texture = currentFrame res.gameTime enemy.texture
+let private renderEnemy res time enemy =
+    let texture = currentFrame time enemy.texture
     res.spriteBatch.Draw(texture , 
                          Vector2(enemy.location.x - (float32)texture.Width / 2.0f, 
                                  enemy.location.y - (float32)texture.Height / 2.0f), 
                          Color.White)
 
-let enemiesRenderer enemies res =
+let enemiesRenderer enemies res time =
     Option.iter 
-    <| List.iter (renderEnemy res)
+    <| List.iter (renderEnemy res time)
     <| enemies

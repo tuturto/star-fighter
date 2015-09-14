@@ -20,8 +20,8 @@ let private spawnBullets res gameTime (playerInput:GameAction []) (player:Mob) s
        else state
 
 /// Render a single bullet
-let private renderBullet res bullet =
-    let texture = currentFrame res.gameTime bullet.texture 
+let private renderBullet res time bullet =
+    let texture = currentFrame time bullet.texture 
     res.spriteBatch.Draw(texture, Vector2(bullet.location.x - (float32)texture.Width / 2.0f, bullet.location.y - (float32)texture.Height / 2.0f), Color.White)
 
 /// Does given bullet intersect with any of the enemies?
@@ -34,13 +34,13 @@ let checkCollisions gameTime enemies bullet =
     let collData = List.map (fun enemy -> 
                         let coll = collision gameTime bullet enemy
                         if coll.IsNone
-                           then NoCollision bullet
-                           else EnemyCollision (enemy, bullet)) enemies
+                           then NoCollision (bullet, gameTime)
+                           else EnemyCollision (enemy, bullet, gameTime)) enemies
                    |> List.filter (function
                                        | NoCollision _ -> false
-                                       | EnemyCollision (_, _) -> true)
+                                       | EnemyCollision (_, _, _) -> true)
     if List.isEmpty collData
-       then NoCollision bullet
+       then NoCollision (bullet, gameTime)
        else List.last collData
 
 /// Pipeline to handle updating bullets state
@@ -51,13 +51,13 @@ let bulletsUpdater (res:RenderResources) state (playerInput, (enemies, (player, 
     |> List.map (checkCollisions gameTime enemies)
     |> tap (fun x -> List.filter (function
                                       | NoCollision _ -> false
-                                      | EnemyCollision (_, _) -> true) x
+                                      | EnemyCollision (_, _, _) -> true) x
                      |> enemyBulletCollisions.OnNext)
     |> List.filter (fun bullet -> not (bullet.Collided))
     |> List.map (fun bullet -> bullet.Bullet)
 
 /// Render given bullets state
-let bulletsRenderer bullets res =
+let bulletsRenderer bullets res time =
     Option.iter 
-    <| List.iter (renderBullet res) 
+    <| List.iter (renderBullet res time) 
     <| bullets
