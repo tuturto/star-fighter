@@ -7,6 +7,7 @@ open System.Reactive
 open FSharp.Control.Reactive 
 
 open Types
+open GameInput
 open RxNA.Renderer 
 
 type ExplosionInput =
@@ -15,8 +16,7 @@ type ExplosionInput =
 
 let initialExplosions renderResources = List.Empty
 
-let explosionUpdater renderResources (state:Mob list) input =
-    // add new explosions: BulletCollisionInfo list -> Mob list
+let private spawnExplosions renderResources (state:Mob list) input =
     match input.collisions with
         | None -> state
         | Some s -> 
@@ -26,9 +26,16 @@ let explosionUpdater renderResources (state:Mob list) input =
                     let time = (List.head s).Time
                     List.map (collisionToMob renderResources time) s
                     |> List.append state
-    // remove expired explosions
-    // move explosion mobs according to their speed
-    // remove explosions that are out of bounds
+
+let explosionUpdater renderResources (state:Mob list) input =
+    if input.time.IsNone
+       then 
+            spawnExplosions renderResources state input
+       else 
+            let time = input.time.Value
+            spawnExplosions renderResources state input
+            |> List.filter (fun explosion -> not (isFinished explosion.texture time))
+            |> List.map (fun explosion -> { explosion with location = explosion.location + explosion.speed * timeCoeff time })
 
 let private renderExplosion res time explosion =
     match isFinished explosion.texture time with
