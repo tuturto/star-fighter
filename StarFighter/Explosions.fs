@@ -16,7 +16,7 @@ type ExplosionInput =
 
 let initialExplosions renderResources = List.Empty
 
-let private spawnExplosions renderResources (state:Mob list) input =
+let private spawnExplosions renderResources state input =
     match input.collisions with
         | None -> state
         | Some s -> 
@@ -27,7 +27,7 @@ let private spawnExplosions renderResources (state:Mob list) input =
                     List.map (collisionToMob renderResources time) s
                     |> List.append state
 
-let explosionUpdater renderResources (state:Mob list) input =
+let explosionUpdater renderResources state input =
     if input.time.IsNone
        then 
             spawnExplosions renderResources state input
