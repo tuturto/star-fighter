@@ -10,16 +10,17 @@ type TextureSpecification =
     | Infinite of texture: Texture2D
     | Timed of texture: Texture2D * duration: float
     | Animation of frames: TextureSpecification list
+    | LoopingAnimation of frames: TextureSpecification list
 
 type Texture =
      | SingleFrame of texture: Texture2D * duration: float option
-     | MultipleFrames of frames: Texture list * start: float
+     | MultipleFrames of frames: Texture list * start: float * loop: bool 
      member this.Duration =
         match this with
             | SingleFrame (t, (Some d)) -> d
             | SingleFrame (t, None) -> 0.0
-            | MultipleFrames (t, _) -> List.map (fun (frame:Texture) -> frame.Duration) t
-                                       |> List.max
+            | MultipleFrames (t, _, _) -> List.map (fun (frame:Texture) -> frame.Duration) t
+                                          |> List.max
 
 type TextureMap = Map<string, TextureSpecification>
 type FontMap = Map<string, SpriteFont>
@@ -49,8 +50,8 @@ let loadAnimationFrame (contentManager:ContentManager) resourceName duration =
 let currentFrame (gameTime:GameTime) texture =
     match texture with
         | SingleFrame (t, d) -> t
-        | MultipleFrames (frames, start) -> 
-            let currentTime = gameTime.TotalGameTime.TotalMilliseconds - start
+        | MultipleFrames (frames, start, _) -> 
+            let currentTime = (gameTime.TotalGameTime.TotalMilliseconds - start) % texture.Duration
             frames
             |> List.fold (fun (state:Texture option) frame -> 
                             match state with
@@ -68,9 +69,13 @@ let rec convert (gameTime:GameTime) textureSpec =
         | Timed (t, d) -> SingleFrame (t, Some d)
         | Animation frames -> 
             let frameList = List.map (convert gameTime) frames
-            MultipleFrames (frameList, gameTime.TotalGameTime.TotalMilliseconds)
+            MultipleFrames (frameList, gameTime.TotalGameTime.TotalMilliseconds, false)
+        | LoopingAnimation frames -> 
+            let frameList = List.map (convert gameTime) frames
+            MultipleFrames (frameList, gameTime.TotalGameTime.TotalMilliseconds, true)
 
 let isFinished animation (gameTime:GameTime) =
     match animation with
         | SingleFrame _ -> false
-        | MultipleFrames (frames, start) -> gameTime.TotalGameTime.TotalMilliseconds - start > animation.Duration 
+        | MultipleFrames (frames, start, false) -> gameTime.TotalGameTime.TotalMilliseconds - start > animation.Duration
+        | MultipleFrames (_, _, true) -> false

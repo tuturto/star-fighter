@@ -127,6 +127,8 @@ type Game () as this =
                                                                       loadAnimationFrame contentManager "large_explosion_f3" 300.0;
                                                                       loadAnimationFrame contentManager "large_explosion_f4" 400.0;
                                                                       loadAnimationFrame contentManager "large_explosion_f5" 500.0; ])
+                                  .Add("spider", LoopingAnimation [ loadAnimationFrame contentManager "spider_f1" 300.0;
+                                                                    loadAnimationFrame contentManager "spider_f2" 600.0; ])  
               fonts = Map.empty.Add("blade-12", contentManager.Load<SpriteFont>("fonts/blade-12"))
                                .Add("blade-48", contentManager.Load<SpriteFont>("fonts/blade-48"))
                                .Add("blade-54", contentManager.Load<SpriteFont>("fonts/blade-54"))
