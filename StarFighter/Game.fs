@@ -62,7 +62,7 @@ type Game () as this =
         |> ignore
 
         let enemiesStream = gameRunningTimeStream
-                            |> Observable.scanInit (initialEnemies renderResources time) enemiesUpdater
+                            |> Observable.scanInit (initialEnemies renderResources time) (enemiesUpdater renderResources)
                             |> Observable.publish 
 
         let enemiesFrame = enemiesStream

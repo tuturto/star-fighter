@@ -14,23 +14,47 @@ open GameInput
 
 let initialEnemies res time =
     List.init 10 (fun index -> { location = { x = (float32)(R.NextDouble()) * 1024.0f; 
-                                              y = (float32)(R.NextDouble()) * 768.0f; }
+                                              y = (float32)(R.NextDouble()) * 400.0f; }
                                  speed = { dx = 0.0f;
                                            dy = 150.0f; }
                                  texture = convert time <| res.textures.Item "asteroid" })
 
-let enemiesUpdater state (time:GameTime) =
+let randomEnemy res time =
+    match R.Next(1, 6) with
+        | 1 -> { location = { x = -96.0f; 
+                              y = (float32)(R.NextDouble()) * 568.0f; }
+                 speed = { dx = 150.0f;
+                           dy = 50.0f; }
+                 texture = convert time <| res.textures.Item "spider" }
+        | 2 -> { location = { x = 1120.0f; 
+                              y = (float32)(R.NextDouble()) * 568.0f; }
+                 speed = { dx = -150.0f;
+                           dy = 50.0f; }
+                 texture = convert time <| res.textures.Item "spider" }
+        | _ -> { location = { x = (float32)(R.NextDouble()) * 1024.0f; 
+                              y = -96.0f; }
+                 speed = { dx = 0.0f;
+                           dy = 150.0f; }
+                 texture = convert time <| res.textures.Item "asteroid" }
+
+let spawnEnemies res time state =
+    if List.length state > 10
+       then state
+       else List.cons state <| randomEnemy res time
+
+let enemiesUpdater res state (time:GameTime) =
     let collided = enemyBulletCollisions.Value
                    |> List.map (fun x -> x.Enemy)
                    |> List.filter (fun x -> x.IsSome)
                    |> List.map (fun x -> x.Value)
     state 
     |> List.filter (fun enemy -> not (List.contains enemy collided))
-    |> List.map (fun enemy ->
-                    let newLocation = enemy.location + enemy.speed * timeCoeff time
-                    { enemy with location = if newLocation.y > 768.0f
-                                               then { y = -96.0f; x = (float32)(R.NextDouble() * 1024.0) }
-                                               else newLocation; })
+    |> List.map (fun enemy -> { enemy with location = enemy.location + enemy.speed * timeCoeff time })
+    |> List.map (fun enemy -> 
+                    if enemy.location.y > 768.0f || enemy.location.x < -96.0f || enemy.location.x > 1120.0f
+                       then randomEnemy res time
+                       else enemy)
+    |> spawnEnemies res time
 
 let private renderEnemy res time enemy =
     let texture = currentFrame time enemy.texture
