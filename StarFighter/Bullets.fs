@@ -15,7 +15,8 @@ let initialBullets renderResources = List.Empty
 let private spawnBullets res gameTime (playerInput:GameAction []) (player:Mob) state =
     if Array.exists (fun x -> x = Attack) playerInput
        then List.append state [ { location = player.location;
-                                  speed = { dx = 0.0f; dy = -750.0f };
+                                  speed = { dx = (float32)(R.NextDouble() * 200.0 - 100.0)
+                                            dy = -750.0f };
                                   texture = convert gameTime <| res.textures.Item "laser";
                                   hp = 1 } ]
        else state
