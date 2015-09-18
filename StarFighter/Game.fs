@@ -7,6 +7,8 @@ open Microsoft.Xna.Framework.Input
 
 open FSharp.Control.Reactive 
 
+open ExtCore.Collections
+
 open RxNA.Renderer 
 open GameInput
 open GameRenderer
@@ -82,14 +84,14 @@ type Game () as this =
                            |> Observable.zip enemiesStream
                            |> Observable.zip playerActionStream
                            |> Observable.scanInit (initialBullets renderResources) (bulletsUpdater renderResources)
+                           |> Observable.publish
 
         let bulletsFrame = bulletStream                           
                            |> Observable.map mapBulletsToFrame
 
         let explosionStream = gameRunningTimeStream
-                              |> Observable.map mapGameTimeToExplosions
-                              |> Observable.merge (enemyBulletCollisions
-                                                   |> Observable.map mapCollisionsToExplosions)
+                              |> Observable.zip enemyBulletCollisions
+                              |> Observable.zip deadEnemies
                               |> Observable.scanInit (initialExplosions renderResources) (explosionUpdater renderResources)
 
         let explosionFrame = explosionStream
@@ -107,6 +109,9 @@ type Game () as this =
         |> Observable.subscribe (fun x -> ())
         |> ignore
 
+        bulletStream.Connect() |> ignore
+        playerActionStream.Connect() |> ignore
+        gameRunningTimeStream.Connect() |> ignore
         enemiesStream.Connect() |> ignore
         playerStream.Connect() |> ignore
 

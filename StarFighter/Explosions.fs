@@ -16,26 +16,14 @@ type ExplosionInput =
 
 let initialExplosions renderResources = List.Empty
 
-let private spawnExplosions renderResources state input =
-    match input.collisions with
-        | None -> state
-        | Some s -> 
-            if List.isEmpty s
-               then state
-               else
-                    let time = (List.head s).Time
-                    List.map (collisionToMob renderResources time) s
-                    |> List.append state
+let private spawnExplosions renderResources state deadEnemies collisions time =
+    List.map (collisionToMob renderResources time) collisions
+    |> List.append state
 
-let explosionUpdater renderResources state input =
-    if input.time.IsNone
-       then 
-            spawnExplosions renderResources state input
-       else 
-            let time = input.time.Value
-            spawnExplosions renderResources state input
-            |> List.filter (fun explosion -> not (isFinished explosion.texture time))
-            |> List.map (fun explosion -> { explosion with location = explosion.location + explosion.speed * timeCoeff time })
+let explosionUpdater renderResources state (deadEnemies, (collisions, time)) =
+    spawnExplosions renderResources state deadEnemies collisions time
+    |> List.filter (fun explosion -> not (isFinished explosion.texture time))
+    |> List.map (fun explosion -> { explosion with location = explosion.location + explosion.speed * timeCoeff time })
 
 let private renderExplosion res time explosion =
     match isFinished explosion.texture time with

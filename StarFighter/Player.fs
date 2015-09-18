@@ -38,6 +38,7 @@ let playerActionStreamPad = gamePadStream
 let playerActionStream = playerActionStreamKeys 
                          |> Observable.zip playerActionStreamPad 
                          |> Observable.map (fun (a, b) -> Array.concat [a; b])
+                         |> Observable.publish
 
 let initialPlayer res time = 
     { location = { x = 464.0f;

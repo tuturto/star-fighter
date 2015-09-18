@@ -67,3 +67,6 @@ let gameModeStream = new BehaviorSubject<GameMode>(Menu)
 
 let enemyBulletCollisions = 
     new System.Reactive.Subjects.BehaviorSubject<BulletCollisionInfo list>([])
+
+let deadEnemies =
+    new System.Reactive.Subjects.BehaviorSubject<Mob list>([])

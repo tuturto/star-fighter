@@ -24,6 +24,7 @@ let menuTimeStream =
 let gameRunningTimeStream =
     gameTimeStream
     |> Observable.filter (fun x -> gameModeStream.Value = GameRunning)
+    |> Observable.publish
 
 let timeCoeff (gameTime:GameTime) = 
     (float32)(gameTime.ElapsedGameTime.TotalMilliseconds / 1000.0)

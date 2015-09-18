@@ -47,6 +47,7 @@ let enemiesUpdater res state (time:GameTime) =
                    |> List.map (fun x -> x.Enemy)
                    |> List.filter (fun x -> x.IsSome)
                    |> List.map (fun x -> x.Value)
+    deadEnemies.OnNext collided
     state 
     |> List.filter (fun enemy -> not (List.contains enemy collided))
     |> List.map (fun enemy -> { enemy with location = enemy.location + enemy.speed * timeCoeff time })
