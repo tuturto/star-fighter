@@ -124,9 +124,9 @@ type Game () as this =
                                   .Add("player", texture "player")
                                   .Add("asteroid", texture "asteroid")
                                   .Add("laser", texture "laser")
-                                  .Add("small explosion", Animation [ loadAnimationFrame contentManager "small_explosion_f1" 200.0;
-                                                                      loadAnimationFrame contentManager "small_explosion_f2" 400.0;
-                                                                      loadAnimationFrame contentManager "small_explosion_f3" 600.0; ])
+                                  .Add("small explosion", Animation [ loadAnimationFrame contentManager "small_explosion_f1" 100.0;
+                                                                      loadAnimationFrame contentManager "small_explosion_f2" 200.0;
+                                                                      loadAnimationFrame contentManager "small_explosion_f3" 300.0; ])
                                   .Add("large explosion", Animation [ loadAnimationFrame contentManager "large_explosion_f1" 100.0;
                                                                       loadAnimationFrame contentManager "large_explosion_f2" 200.0;
                                                                       loadAnimationFrame contentManager "large_explosion_f3" 300.0;

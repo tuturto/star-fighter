@@ -16,7 +16,8 @@ let private spawnBullets res gameTime (playerInput:GameAction []) (player:Mob) s
     if Array.exists (fun x -> x = Attack) playerInput
        then List.append state [ { location = player.location;
                                   speed = { dx = 0.0f; dy = -750.0f };
-                                  texture = convert gameTime <| res.textures.Item "laser" } ]
+                                  texture = convert gameTime <| res.textures.Item "laser";
+                                  hp = 1 } ]
        else state
 
 /// Render a single bullet
@@ -35,10 +36,10 @@ let checkCollisions gameTime enemies bullet =
                         let coll = collision gameTime bullet enemy
                         if coll.IsNone
                            then NoCollision (bullet, gameTime)
-                           else EnemyCollision (enemy, bullet, gameTime)) enemies
+                           else EnemyCollision (enemy, bullet, coll.Value, gameTime)) enemies
                    |> List.filter (function
                                        | NoCollision _ -> false
-                                       | EnemyCollision (_, _, _) -> true)
+                                       | EnemyCollision _ -> true)
     if List.isEmpty collData
        then NoCollision (bullet, gameTime)
        else List.last collData
@@ -51,7 +52,7 @@ let bulletsUpdater (res:RenderResources) state (playerInput, (enemies, (player, 
     |> List.map (checkCollisions gameTime enemies)
     |> tap (fun x -> List.filter (function
                                       | NoCollision _ -> false
-                                      | EnemyCollision (_, _, _) -> true) x
+                                      | EnemyCollision _ -> true) x
                      |> enemyBulletCollisions.OnNext)
     |> List.filter (fun bullet -> not (bullet.Collided))
     |> List.map (fun bullet -> bullet.Bullet)

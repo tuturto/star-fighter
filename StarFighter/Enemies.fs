@@ -17,7 +17,8 @@ let initialEnemies res time =
                                               y = (float32)(R.NextDouble()) * 400.0f; }
                                  speed = { dx = 0.0f;
                                            dy = 150.0f; }
-                                 texture = convert time <| res.textures.Item "asteroid" })
+                                 texture = convert time <| res.textures.Item "asteroid";
+                                 hp = 10; })
 
 let randomEnemy res time =
     match R.Next(1, 6) with
@@ -25,17 +26,20 @@ let randomEnemy res time =
                               y = (float32)(R.NextDouble()) * 568.0f; }
                  speed = { dx = 150.0f;
                            dy = 50.0f; }
-                 texture = convert time <| res.textures.Item "spider" }
+                 texture = convert time <| res.textures.Item "spider"
+                 hp = 3; }
         | 2 -> { location = { x = 1120.0f; 
                               y = (float32)(R.NextDouble()) * 568.0f; }
                  speed = { dx = -150.0f;
                            dy = 50.0f; }
-                 texture = convert time <| res.textures.Item "spider" }
+                 texture = convert time <| res.textures.Item "spider"
+                 hp = 3; }
         | _ -> { location = { x = (float32)(R.NextDouble()) * 1024.0f; 
                               y = -96.0f; }
                  speed = { dx = 0.0f;
                            dy = 150.0f; }
-                 texture = convert time <| res.textures.Item "asteroid" }
+                 texture = convert time <| res.textures.Item "asteroid";
+                 hp = 10; }
 
 let spawnEnemies res time state =
     if List.length state > 10
@@ -47,9 +51,14 @@ let enemiesUpdater res state (time:GameTime) =
                    |> List.map (fun x -> x.Enemy)
                    |> List.filter (fun x -> x.IsSome)
                    |> List.map (fun x -> x.Value)
-    deadEnemies.OnNext collided
+    let dead = collided
+               |> List.filter (fun x -> x.hp < 2)
+    deadEnemies.OnNext dead
     state 
-    |> List.filter (fun enemy -> not (List.contains enemy collided))
+    |> List.filter (fun enemy -> not (List.contains enemy dead))
+    |> List.map (fun enemy -> if (List.contains enemy collided)
+                                  then { enemy with hp = enemy.hp - 1 }
+                                  else enemy)
     |> List.map (fun enemy -> { enemy with location = enemy.location + enemy.speed * timeCoeff time })
     |> List.map (fun enemy -> 
                     if enemy.location.y > 768.0f || enemy.location.x < -96.0f || enemy.location.x > 1120.0f

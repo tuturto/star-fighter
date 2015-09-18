@@ -15,7 +15,8 @@ let initialStarField res time =
                                                y = (float32)(R.NextDouble()) * 768.0f; }
                                   speed = { dx = 0.0f;
                                             dy = (float32)(R.Next(1, 6)) * 25.0f; }
-                                  texture = convert time <| res.textures.Item "star" })
+                                  texture = convert time <| res.textures.Item "star";
+                                  hp = 1 })
 
 let starsUpdater state (time:GameTime) =
     state |> List.map (fun star ->

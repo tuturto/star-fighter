@@ -17,7 +17,8 @@ type ExplosionInput =
 let initialExplosions renderResources = List.Empty
 
 let private spawnExplosions renderResources state deadEnemies collisions time =
-    List.map (collisionToMob renderResources time) collisions
+    List.map (impactExplosions renderResources time) collisions
+    |> List.append <| List.map (enemyExplosions renderResources time) deadEnemies
     |> List.append state
 
 let explosionUpdater renderResources state (deadEnemies, (collisions, time)) =

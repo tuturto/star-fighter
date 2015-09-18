@@ -45,7 +45,8 @@ let initialPlayer res time =
                    y = 600.0f; }
       speed = { dx = 0.0f;
                 dy = 0.0f; }
-      texture = convert time <| res.textures.Item "player" } 
+      texture = convert time <| res.textures.Item "player";
+      hp = 1; } 
 
 let addMovementActions state action =
     let newSpeed = match action with
