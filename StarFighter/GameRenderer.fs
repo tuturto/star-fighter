@@ -88,10 +88,10 @@ let mapEnemiesToFrame enemiesStream =
       renderResources = None; 
       time = None; }    
 
-let mapBulletsToFrame bulletsStream =
+let mapBulletsToFrame (bulletsStream:BulletInfo) =
     { player = None; 
       enemies = None;
-      bullets = Some bulletsStream;
+      bullets = Some bulletsStream.bullets;
       explosions = None;
       menu = None;
       starField = None;

@@ -9,16 +9,19 @@ open Types
 open Collisions
 open GameInput
 
-let initialBullets renderResources = List.Empty
+let initialBullets renderResources = 
+    { fired = 0.0;
+      bullets = List.empty<Mob> }
 
 /// Spawn new bullets if player is currently shooting
-let private spawnBullets res gameTime (playerInput:GameAction []) (player:Mob) state =
-    if Array.exists (fun x -> x = Attack) playerInput
-       then List.append state [ { location = player.location;
-                                  speed = { dx = (float32)(R.NextDouble() * 200.0 - 100.0)
-                                            dy = -750.0f };
-                                  texture = convert gameTime <| res.textures.Item "laser";
-                                  hp = 1 } ]
+let private spawnBullets res (gameTime:GameTime) (playerInput:GameAction []) (player:Mob) state =
+    if Array.exists (fun x -> x = Attack) playerInput && (gameTime.TotalGameTime.TotalMilliseconds - state.fired) > 100.0
+       then { fired = gameTime.TotalGameTime.TotalMilliseconds;
+              bullets = List.append state.bullets [ { location = player.location;
+                                                      speed = { dx = (float32)(R.NextDouble() * 200.0 - 100.0)
+                                                                dy = -750.0f };
+                                                      texture = convert gameTime <| res.textures.Item "laser";
+                                                      hp = 1 } ] }
        else state
 
 /// Render a single bullet
@@ -46,17 +49,19 @@ let checkCollisions gameTime enemies bullet =
        else List.last collData
 
 /// Pipeline to handle updating bullets state
-let bulletsUpdater (res:RenderResources) state (playerInput, (enemies, (player, gameTime))) =
-    spawnBullets res gameTime playerInput player state 
-    |> List.map (fun bullet -> { bullet with location = bullet.location + bullet.speed * timeCoeff gameTime})
-    |> List.filter (fun bullet -> bullet.location.y > 0.0f)
-    |> List.map (checkCollisions gameTime enemies)
-    |> tap (fun x -> List.filter (function
-                                      | NoCollision _ -> false
-                                      | EnemyCollision _ -> true) x
-                     |> enemyBulletCollisions.OnNext)
-    |> List.filter (fun bullet -> not (bullet.Collided))
-    |> List.map (fun bullet -> bullet.Bullet)
+let bulletsUpdater (res:RenderResources) (state:BulletInfo) (playerInput, (enemies, (player, gameTime))) =
+    let bullets = spawnBullets res gameTime playerInput player state
+    { bullets = bullets.bullets
+                |> List.map (fun bullet -> { bullet with location = bullet.location + bullet.speed * timeCoeff gameTime})
+                |> List.filter (fun bullet -> bullet.location.y > 0.0f)
+                |> List.map (checkCollisions gameTime enemies)
+                |> tap (fun x -> List.filter (function
+                                                  | NoCollision _ -> false
+                                                  | EnemyCollision _ -> true) x
+                                 |> enemyBulletCollisions.OnNext)
+                |> List.filter (fun bullet -> not (bullet.Collided))
+                |> List.map (fun bullet -> bullet.Bullet);
+      fired = bullets.fired }
 
 /// Render given bullets state
 let bulletsRenderer bullets res time =

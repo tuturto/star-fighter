@@ -35,6 +35,9 @@ type Mob = { location: Location
              texture: Texture
              hp: int }
 
+type BulletInfo = { fired: float
+                    bullets: Mob list }
+
 type BulletCollisionInfo = 
      | EnemyCollision of enemy : Mob * bullet : Mob * location : Location * time : GameTime
      | NoCollision of bullet : Mob * time : GameTime
