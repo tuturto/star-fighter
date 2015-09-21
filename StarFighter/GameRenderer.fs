@@ -10,6 +10,7 @@ open Player
 open Enemies
 open Bullets
 open Explosions
+open PowerUps
 
 let menuRenderStream =
     renderStream
@@ -24,6 +25,7 @@ type Frame =
       enemies: Mob list option
       bullets: Mob list option
       explosions: Mob list option
+      powerUps: Mob list option
       menu: Mob option
       starField: Mob list option
       renderResources: RenderResources option
@@ -33,6 +35,7 @@ type Frame =
           enemies = Option.orElse arg1.enemies arg2.enemies;
           bullets = Option.orElse arg1.bullets arg2.bullets;
           explosions = Option.orElse arg1.explosions arg2.explosions;
+          powerUps = Option.orElse arg1.powerUps arg2.powerUps;
           menu = Option.orElse arg1.menu arg2.menu;
           starField = Option.orElse arg1.starField arg2.starField;
           renderResources = Option.orElse arg1.renderResources arg2.renderResources;
@@ -43,6 +46,7 @@ let initialFrame =
       enemies = None;
       bullets = None;
       explosions = None;
+      powerUps = None;
       menu = None;
       starField = None;
       renderResources = None;
@@ -53,6 +57,7 @@ let mapMenuToFrame menuStream =
       enemies = None;
       bullets = None;
       explosions = None;
+      powerUps = None;
       menu = Some menuStream;
       starField = None;
       renderResources = None; 
@@ -63,6 +68,7 @@ let mapPlayerToFrame playerStream =
       enemies = None;
       bullets = None;
       explosions = None;
+      powerUps = None;
       menu = None;
       starField = None;
       renderResources = None; 
@@ -73,6 +79,7 @@ let mapStarsToFrame starStream =
       enemies = None;
       bullets = None;
       explosions = None;
+      powerUps = None;
       menu = None;
       starField = Some starStream;
       renderResources = None; 
@@ -83,6 +90,7 @@ let mapEnemiesToFrame enemiesStream =
       enemies = Some enemiesStream;
       bullets = None;
       explosions = None;
+      powerUps = None;
       menu = None;
       starField = None;
       renderResources = None; 
@@ -93,6 +101,7 @@ let mapBulletsToFrame (bulletsStream:BulletInfo) =
       enemies = None;
       bullets = Some bulletsStream.bullets;
       explosions = None;
+      powerUps = None;
       menu = None;
       starField = None;
       renderResources = None; 
@@ -103,6 +112,18 @@ let mapExplosionsToFrame explosionStream =
       enemies = None;
       bullets = None;
       explosions = Some explosionStream;
+      powerUps = None;
+      menu = None;
+      starField = None;
+      renderResources = None; 
+      time = None; }    
+
+let mapPowerUpsToFrame powerUpStream =
+    { player = None; 
+      enemies = None;
+      bullets = None;
+      explosions = None;
+      powerUps = Some powerUpStream;
       menu = None;
       starField = None;
       renderResources = None; 
@@ -113,6 +134,7 @@ let mapRenderStreamToFrame (renderStream, gameTime) =
       enemies = None;
       bullets = None;
       explosions = None;
+      powerUps = None;
       menu = None;
       starField = None;
       renderResources = Some renderStream; 
@@ -135,6 +157,7 @@ let gameRunningRenderer frame frameStream =
                             enemiesRenderer newFrame.enemies res time
                             explosionRenderer newFrame.explosions res time
                             bulletsRenderer newFrame.bullets res time
-                            playerRenderer newFrame.player res time) frameStream.renderResources
+                            playerRenderer newFrame.player res time
+                            powerUpsRenderer newFrame.powerUps res time) frameStream.renderResources
         else ()
     newFrame

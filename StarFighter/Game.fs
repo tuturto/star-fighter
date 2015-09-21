@@ -19,6 +19,7 @@ open Player
 open Bullets
 open Enemies
 open Explosions
+open PowerUps
 
 type Game () as this =
     inherit Microsoft.Xna.Framework.Game()
@@ -89,6 +90,13 @@ type Game () as this =
         let bulletsFrame = bulletStream                           
                            |> Observable.map mapBulletsToFrame
 
+        let powerUpStream = gameRunningTimeStream
+                            |> Observable.zip deadEnemies
+                            |> Observable.scanInit (initialPowerUps renderResources) (powerUpUpdater renderResources)
+
+        let powerUpFrame = powerUpStream
+                           |> Observable.map mapPowerUpsToFrame
+
         let explosionStream = gameRunningTimeStream
                               |> Observable.zip enemyBulletCollisions
                               |> Observable.zip deadEnemies
@@ -105,6 +113,7 @@ type Game () as this =
         |> Observable.merge starFrame
         |> Observable.merge bulletsFrame
         |> Observable.merge explosionFrame
+        |> Observable.merge powerUpFrame
         |> Observable.scanInit initialFrame gameRunningRenderer
         |> Observable.subscribe (fun x -> ())
         |> ignore
