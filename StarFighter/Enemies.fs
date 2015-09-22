@@ -46,7 +46,7 @@ let spawnEnemies res time state =
        then state
        else List.cons state <| randomEnemy res time
 
-let enemiesUpdater res state (time:GameTime) =
+let enemiesUpdater res (state:Enemy list) (time:GameTime) =
     let collided = enemyBulletCollisions.Value
                    |> List.map (fun x -> x.Enemy)
                    |> List.filter (fun x -> x.IsSome)

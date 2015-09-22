@@ -41,14 +41,13 @@ let playerActionStream = playerActionStreamKeys
                          |> Observable.publish
 
 let initialPlayer res time = 
-    { location = { x = 464.0f;
-                   y = 600.0f; }
+    { Mob.location = { x = 464.0f;
+                       y = 600.0f; }
       speed = { dx = 0.0f;
                 dy = 0.0f; }
-      texture = convert time <| res.textures.Item "player";
-      hp = 1; } 
+      texture = convert time <| res.textures.Item "player"; } 
 
-let addMovementActions state action =
+let addMovementActions (state:Mob) action =
     let newSpeed = match action with
                        | Move (0.0f, 0.0f) -> { dx=0.0f; dy=0.0f; }
                        | Move (dx, 0.0f) -> { state.speed with dx=dx; }
@@ -57,7 +56,7 @@ let addMovementActions state action =
                        | _ -> state.speed
     { state with speed = newSpeed }
 
-let playerUpdater (state:Mob) ((enemies:Mob list), ((actions:GameAction []), (time:GameTime))) =
+let playerUpdater (state:Mob) ((enemies:Enemy list), ((actions:GameAction []), (time:GameTime))) =
     let collisionPoints = List.map (collision time state) enemies
                           |> List.filter (fun x -> x.IsSome)
     let newState = Array.fold (fun acc item ->
@@ -70,8 +69,8 @@ let playerUpdater (state:Mob) ((enemies:Mob list), ((actions:GameAction []), (ti
                                   then newState.location + newState.speed * timeCoeff time * 250.0f
                                   else { x = 464.0f; y = 600.0f }}
 
-let playerRenderer state res time = 
-    Option.iter (fun player ->
+let playerRenderer (state:Mob option) res time = 
+    Option.iter (fun (player:Mob) ->
                     let texture = currentFrame time player.texture 
                     res.spriteBatch.Draw(texture, 
                                          Vector2(player.location.x - (float32)texture.Width / 2.0f, 

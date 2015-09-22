@@ -11,14 +11,13 @@ open RxNA.Renderer
 open GameInput
 
 let initialStarField res time = 
-    List.init 250 (fun index -> { location = { x = (float32)(R.NextDouble()) * 1024.0f; 
-                                               y = (float32)(R.NextDouble()) * 768.0f; }
+    List.init 250 (fun index -> { Mob.location = { x = (float32)(R.NextDouble()) * 1024.0f; 
+                                                   y = (float32)(R.NextDouble()) * 768.0f; }
                                   speed = { dx = 0.0f;
                                             dy = (float32)(R.Next(1, 6)) * 25.0f; }
-                                  texture = convert time <| res.textures.Item "star";
-                                  hp = 1 })
+                                  texture = convert time <| res.textures.Item "star"; })
 
-let starsUpdater state (time:GameTime) =
+let starsUpdater (state:Mob list) (time:GameTime) =
     state |> List.map (fun star ->
         let newLocation = star.location + star.speed * timeCoeff time
         let newLocation' = if newLocation.y > 768.0f

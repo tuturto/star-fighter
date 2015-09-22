@@ -32,12 +32,11 @@ let menuActionStream = menuActionStreamKeys
                        |> Observable.merge menuActionStreamPad 
 
 let initialMenu res time = 
-    { location = { x = 500.0f;
-                   y = 600.0f; }
+    { Mob.location = { x = 500.0f;
+                       y = 600.0f; }
       speed = { dx = 0.0f;
                 dy = 0.0f; }
-      texture = convert time <| res.textures.Item "player";
-      hp = 1 }
+      texture = convert time <| res.textures.Item "player"; }
 
 let menuInputHandler actions = 
     if actions |> Array.exists (fun action -> action = MenuAction.ExitGame) 
@@ -49,8 +48,8 @@ let menuInputHandler actions =
 let menuUpdater state (time:GameTime) =
     state
 
-let menuRenderer state res time =
-    Option.iter (fun menu ->
+let menuRenderer (state:Mob option) res time =
+    Option.iter (fun (menu:Mob) ->
                     let texture = currentFrame time menu.texture 
                     res.spriteBatch.Draw(texture, Vector2(menu.location.x, menu.location.y), Color.White)
                     let font72 = res.fonts.Item "blade-72"

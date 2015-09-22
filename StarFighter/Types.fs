@@ -32,16 +32,22 @@ type Location =
 
 type Mob = { location: Location
              speed: Speed
-             texture: Texture
-             hp: int }
+             texture: Texture }
            member this.Location = this.location     
            member this.Texture = this.texture 
+
+type Enemy = { location: Location
+               speed: Speed
+               texture: Texture
+               hp: int }
+             member this.Location = this.location     
+             member this.Texture = this.texture 
 
 type BulletInfo = { fired: float
                     bullets: Mob list }
 
 type BulletCollisionInfo = 
-     | EnemyCollision of enemy : Mob * bullet : Mob * location : Location * time : GameTime
+     | EnemyCollision of enemy : Enemy * bullet : Mob * location : Location * time : GameTime
      | NoCollision of bullet : Mob * time : GameTime
      member this.Collided =
         match this with
@@ -66,16 +72,14 @@ type BulletCollisionInfo =
 
 let impactExplosions res time (info:BulletCollisionInfo) =
     let enemy = info.Enemy.Value 
-    { location = info.Location.Value;
+    { Mob.location = info.Location.Value;
       speed = enemy.speed;
-      texture = convert time <| res.textures.Item "small explosion";
-      hp = 1 }
+      texture = convert time <| res.textures.Item "small explosion"; }
 
 let enemyExplosions res time enemy =
-    { location = enemy.location ;
+    { Mob.location = enemy.location ;
       speed = enemy.speed;
-      texture = convert time <| res.textures.Item "large explosion";
-      hp = 1 }
+      texture = convert time <| res.textures.Item "large explosion"; }
 
 let R = System.Random()
 
@@ -86,4 +90,4 @@ let enemyBulletCollisions =
     new System.Reactive.Subjects.BehaviorSubject<BulletCollisionInfo list>([])
 
 let deadEnemies =
-    new System.Reactive.Subjects.BehaviorSubject<Mob list>([])
+    new System.Reactive.Subjects.BehaviorSubject<Enemy list>([])

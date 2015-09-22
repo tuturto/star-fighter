@@ -22,7 +22,7 @@ let gameRunningRenderStream =
 
 type Frame =
     { player: Mob option
-      enemies: Mob list option
+      enemies: Enemy list option
       bullets: Mob list option
       explosions: Mob list option
       powerUps: Mob list option

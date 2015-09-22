@@ -20,12 +20,11 @@ let private spawnBullets res (gameTime:GameTime) (playerInput:GameAction []) (pl
               bullets = List.append state.bullets [ { location = player.location;
                                                       speed = { dx = (float32)(R.NextDouble() * 200.0 - 100.0)
                                                                 dy = -750.0f };
-                                                      texture = convert gameTime <| res.textures.Item "laser";
-                                                      hp = 1 } ] }
+                                                      texture = convert gameTime <| res.textures.Item "laser"; } ] }
        else state
 
 /// Render a single bullet
-let private renderBullet res time bullet =
+let private renderBullet res time (bullet:Mob) =
     let texture = currentFrame time bullet.texture 
     res.spriteBatch.Draw(texture, Vector2(bullet.location.x - (float32)texture.Width / 2.0f, bullet.location.y - (float32)texture.Height / 2.0f), Color.White)
 
@@ -64,7 +63,7 @@ let bulletsUpdater (res:RenderResources) (state:BulletInfo) (playerInput, (enemi
       fired = bullets.fired }
 
 /// Render given bullets state
-let bulletsRenderer bullets res time =
+let bulletsRenderer (bullets:Mob list option) res time =
     Option.iter 
     <| List.iter (renderBullet res time) 
     <| bullets
