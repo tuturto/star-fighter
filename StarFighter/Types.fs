@@ -34,6 +34,8 @@ type Mob = { location: Location
              speed: Speed
              texture: Texture
              hp: int }
+           member this.Location = this.location     
+           member this.Texture = this.texture 
 
 type BulletInfo = { fired: float
                     bullets: Mob list }

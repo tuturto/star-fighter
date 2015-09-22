@@ -6,21 +6,23 @@ open RxNA.Renderer
 open Types
 
 
-let boundingSphereCollision gameTime (mob1:Mob) (mob2:Mob) =
-    let dx = mob1.location.x - mob2.location.x 
-    let dy = mob1.location.y - mob2.location.y
-    let texture1 = currentFrame gameTime mob1.texture 
-    let texture2 = currentFrame gameTime mob2.texture 
+let inline boundingSphereCollision gameTime (mob1:^a) (mob2:^b) =
+    let location1 = (^a : (member Location : Location) mob1)
+    let location2 = (^b : (member Location : Location) mob2)
+    let texture1 = currentFrame gameTime (^a : (member Texture : Texture) mob1)
+    let texture2 = currentFrame gameTime (^b : (member Texture : Texture) mob2)
+    let dx = location1.x - location2.x 
+    let dy = location1.y - location2.y
     let width = (float32)(texture1.Width + texture2.Width) / 2.0f
     let distance = width * width
     if dx*dx + dy*dy <= (float32)distance
-        then Some ((mob1.location + mob2.location) / 2.0f);
+        then Some ((location1+ location2) / 2.0f);
         else None
 
-let pixelPerfectCollision mob1 mob2 =
+let inline pixelPerfectCollision mob1 mob2 =
     None
 
-let collision gameTime mob1 mob2 =
+let inline collision gameTime mob1 mob2 =
     maybe {
             return! boundingSphereCollision gameTime mob1 mob2
     }

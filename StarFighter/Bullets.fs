@@ -30,7 +30,7 @@ let private renderBullet res time bullet =
     res.spriteBatch.Draw(texture, Vector2(bullet.location.x - (float32)texture.Width / 2.0f, bullet.location.y - (float32)texture.Height / 2.0f), Color.White)
 
 /// Does given bullet intersect with any of the enemies?
-let isHit gameTime bullet enemies =
+let isHit gameTime (bullet:Mob) (enemies:Mob list) =
     not (List.map (fun enemy -> collision gameTime bullet enemy) enemies
          |> List.filter Option.isSome
          |> List.isEmpty)

@@ -57,7 +57,7 @@ let addMovementActions state action =
                        | _ -> state.speed
     { state with speed = newSpeed }
 
-let playerUpdater (state:Mob) (enemies, ((actions:GameAction []), (time:GameTime))) =
+let playerUpdater (state:Mob) ((enemies:Mob list), ((actions:GameAction []), (time:GameTime))) =
     let collisionPoints = List.map (collision time state) enemies
                           |> List.filter (fun x -> x.IsSome)
     let newState = Array.fold (fun acc item ->
