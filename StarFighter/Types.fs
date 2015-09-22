@@ -43,6 +43,18 @@ type Enemy = { location: Location
              member this.Location = this.location     
              member this.Texture = this.texture 
 
+type PowerUpType =
+    | Machinegun
+    | Shotgun
+    | Dualshot
+
+type PowerUp = { location: Location
+                 speed: Speed
+                 texture: Texture
+                 weapon: PowerUpType }
+               member this.Location = this.location     
+               member this.Texture = this.texture 
+
 type BulletInfo = { fired: float
                     bullets: Mob list }
 
@@ -76,7 +88,7 @@ let impactExplosions res time (info:BulletCollisionInfo) =
       speed = enemy.speed;
       texture = convert time <| res.textures.Item "small explosion"; }
 
-let enemyExplosions res time enemy =
+let enemyExplosions res time (enemy:Enemy) =
     { Mob.location = enemy.location ;
       speed = enemy.speed;
       texture = convert time <| res.textures.Item "large explosion"; }

@@ -66,14 +66,14 @@ let enemiesUpdater res (state:Enemy list) (time:GameTime) =
                        else enemy)
     |> spawnEnemies res time
 
-let private renderEnemy res time enemy =
+let private renderEnemy res time (enemy:Enemy) =
     let texture = currentFrame time enemy.texture
     res.spriteBatch.Draw(texture , 
                          Vector2(enemy.location.x - (float32)texture.Width / 2.0f, 
                                  enemy.location.y - (float32)texture.Height / 2.0f), 
                          Color.White)
 
-let enemiesRenderer enemies res time =
+let enemiesRenderer (enemies:Enemy list option) res time =
     Option.iter 
     <| List.iter (renderEnemy res time)
     <| enemies

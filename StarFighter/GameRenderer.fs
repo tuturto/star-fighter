@@ -25,7 +25,7 @@ type Frame =
       enemies: Enemy list option
       bullets: Mob list option
       explosions: Mob list option
-      powerUps: Mob list option
+      powerUps: PowerUp list option
       menu: Mob option
       starField: Mob list option
       renderResources: RenderResources option
