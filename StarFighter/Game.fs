@@ -65,11 +65,8 @@ type Game () as this =
         |> ignore
 
         let enemiesStream = gameRunningTimeStream
-                            |> Observable.scanInit (initialEnemies renderResources time) (enemiesUpdater renderResources)
+                            |> Observable.scanInit (initialEnemies renderResources time) (enemiesUpdater deadEnemies.OnNext renderResources)
                             |> Observable.publish 
-
-        let enemiesFrame = enemiesStream
-                           |> Observable.map mapEnemiesToFrame
 
         let playerStream = gameRunningTimeStream
                            |> Observable.zip playerActionStream
@@ -77,43 +74,32 @@ type Game () as this =
                            |> Observable.scanInit (initialPlayer renderResources time) playerUpdater
                            |> Observable.publish
 
-        let playerFrame = playerStream
-                          |> Observable.map mapPlayerToFrame                           
+        let powerUpStream = gameRunningTimeStream
+                            |> Observable.zip deadEnemies
+                            |> Observable.scanInit (initialPowerUps renderResources) (powerUpUpdater renderResources playerPowerUpCollisions)
+                            |> Observable.publish 
 
         let bulletStream = gameRunningTimeStream
                            |> Observable.zip playerStream
                            |> Observable.zip enemiesStream
                            |> Observable.zip playerActionStream
-                           |> Observable.scanInit (initialBullets renderResources) (bulletsUpdater renderResources)
+                           |> Observable.zip powerUpStream
+                           |> Observable.scanInit (initialBullets renderResources) (bulletsUpdater enemyBulletCollisions.OnNext playerPowerUpCollisions.OnNext renderResources)
                            |> Observable.publish
-
-        let bulletsFrame = bulletStream                           
-                           |> Observable.map mapBulletsToFrame
-
-        let powerUpStream = gameRunningTimeStream
-                            |> Observable.zip deadEnemies
-                            |> Observable.scanInit (initialPowerUps renderResources) (powerUpUpdater renderResources)
-
-        let powerUpFrame = powerUpStream
-                           |> Observable.map mapPowerUpsToFrame
 
         let explosionStream = gameRunningTimeStream
                               |> Observable.zip enemyBulletCollisions
                               |> Observable.zip deadEnemies
                               |> Observable.scanInit (initialExplosions renderResources) (explosionUpdater renderResources)
 
-        let explosionFrame = explosionStream
-                             |> Observable.map mapExplosionsToFrame
-
         gameRunningRenderStream
         |> Observable.map mapRenderStreamToFrame
-        |> Observable.merge playerFrame
-        |> Observable.merge bulletsFrame
-        |> Observable.merge enemiesFrame
+        |> Observable.merge <| Observable.map mapPlayerToFrame playerStream
+        |> Observable.merge <| Observable.map mapEnemiesToFrame enemiesStream
         |> Observable.merge starFrame
-        |> Observable.merge bulletsFrame
-        |> Observable.merge explosionFrame
-        |> Observable.merge powerUpFrame
+        |> Observable.merge <| Observable.map mapBulletsToFrame bulletStream
+        |> Observable.merge <| Observable.map mapExplosionsToFrame explosionStream
+        |> Observable.merge <| Observable.map mapPowerUpsToFrame powerUpStream
         |> Observable.scanInit initialFrame gameRunningRenderer
         |> Observable.subscribe (fun x -> ())
         |> ignore
@@ -123,6 +109,7 @@ type Game () as this =
         gameRunningTimeStream.Connect() |> ignore
         enemiesStream.Connect() |> ignore
         playerStream.Connect() |> ignore
+        powerUpStream.Connect() |> ignore
 
     override this.LoadContent() =
         let texture = loadTexture contentManager

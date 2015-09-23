@@ -56,6 +56,7 @@ type PowerUp = { location: Location
                member this.Texture = this.texture 
 
 type BulletInfo = { fired: float
+                    weapon: PowerUpType
                     bullets: Mob list }
 
 type BulletCollisionInfo = 
@@ -100,6 +101,9 @@ let gameModeStream = new BehaviorSubject<GameMode>(Menu)
 
 let enemyBulletCollisions = 
     new System.Reactive.Subjects.BehaviorSubject<BulletCollisionInfo list>([])
+
+let playerPowerUpCollisions = 
+    new System.Reactive.Subjects.BehaviorSubject<PowerUp list>([])
 
 let deadEnemies =
     new System.Reactive.Subjects.BehaviorSubject<Enemy list>([])

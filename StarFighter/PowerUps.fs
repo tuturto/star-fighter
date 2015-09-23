@@ -27,8 +27,9 @@ let private spawnPowerUps res (state:PowerUp list) (deadEnemies:Enemy list) time
     |> List.filter (fun dead -> R.NextDouble() > 0.90)
     |> List.map (fun dead -> randomPowerUp res time dead)
 
-let powerUpUpdater res state ((deadEnemies:Enemy list), (time:GameTime)) =
+let powerUpUpdater res (playerPowerUpReport:System.Reactive.Subjects.BehaviorSubject<PowerUp list>) state ((deadEnemies:Enemy list), (time:GameTime)) =
     state
+    |> List.filter (fun x -> not(List.contains x playerPowerUpReport.Value))
     |> List.append <| spawnPowerUps res state deadEnemies time
     |> List.map (fun powerUp -> { powerUp with location = powerUp.location + powerUp.speed * timeCoeff time })
     |> List.filter (fun powerUp -> powerUp.location.y < 1120.0f )

@@ -20,7 +20,7 @@ let initialEnemies res time =
                                  texture = convert time <| res.textures.Item "asteroid";
                                  hp = 10; })
 
-let randomEnemy res time =
+let private randomEnemy res time =
     match R.Next(1, 6) with
         | 1 -> { location = { x = -96.0f; 
                               y = (float32)(R.NextDouble()) * 568.0f; }
@@ -41,19 +41,19 @@ let randomEnemy res time =
                  texture = convert time <| res.textures.Item "asteroid";
                  hp = 10; }
 
-let spawnEnemies res time state =
+let private spawnEnemies res time state =
     if List.length state > 10
        then state
        else List.cons state <| randomEnemy res time
 
-let enemiesUpdater res (state:Enemy list) (time:GameTime) =
+let enemiesUpdater deadEnemiesReport res (state:Enemy list) (time:GameTime) =
     let collided = enemyBulletCollisions.Value
                    |> List.map (fun x -> x.Enemy)
                    |> List.filter (fun x -> x.IsSome)
                    |> List.map (fun x -> x.Value)
     let dead = collided
                |> List.filter (fun x -> x.hp < 2)
-    deadEnemies.OnNext dead
+    deadEnemiesReport dead
     state 
     |> List.filter (fun enemy -> not (List.contains enemy dead))
     |> List.map (fun enemy -> if (List.contains enemy collided)
