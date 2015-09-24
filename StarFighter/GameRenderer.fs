@@ -145,7 +145,7 @@ let menuShownRenderer frame frameStream =
     let time = new Microsoft.Xna.Framework.GameTime()
     Option.iter (fun res ->
                     starsRenderer newFrame.starField res time
-                    menuRenderer newFrame.menu res time) frameStream.renderResources           
+                    menuRenderer res time) frameStream.renderResources           
     newFrame
 
 let gameRunningRenderer frame frameStream = 

@@ -52,14 +52,9 @@ type Game () as this =
                         |> Observable.scanInit (initialStarField renderResources time) starsUpdater
                         |> Observable.map mapStarsToFrame
 
-        let menuFrame = menuTimeStream
-                        |> Observable.scanInit (initialMenu renderResources time) menuUpdater
-                        |> Observable.map mapMenuToFrame
-
         menuRenderStream
         |> Observable.map mapRenderStreamToFrame
         |> Observable.merge starFrame
-        |> Observable.merge menuFrame
         |> Observable.scanInit initialFrame menuShownRenderer
         |> Observable.subscribe (fun x -> ())
         |> ignore
