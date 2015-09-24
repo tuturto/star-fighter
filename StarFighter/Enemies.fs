@@ -14,33 +14,37 @@ open RxNA.Input
 open GameInput
 
 let initialEnemies res (rng:System.Random) time =
-    List.init 10 (fun index -> { location = { x = (float32)(rng.NextDouble()) * 1024.0f; 
-                                              y = (float32)(rng.NextDouble()) * 400.0f; }
-                                 speed = { dx = 0.0f;
-                                           dy = 150.0f; }
-                                 texture = convert time <| res.textures.Item "asteroid";
-                                 hp = 10; })
+    List.init 10 (fun index -> { location = { x = (float32)(rng.NextDouble()) * 1024.0f
+                                              y = (float32)(rng.NextDouble()) * 400.0f }
+                                 speed = { dx = 0.0f
+                                           dy = 150.0f }
+                                 texture = convert time <| res.textures.Item "asteroid"
+                                 hp = 10
+                                 score = 25 })
 
 let private randomEnemy res (rng:System.Random) time =
     match rng.Next(1, 6) with
-        | 1 -> { location = { x = -96.0f; 
-                              y = (float32)(rng.NextDouble()) * 568.0f; }
-                 speed = { dx = 150.0f;
-                           dy = 50.0f; }
+        | 1 -> { location = { x = -96.0f 
+                              y = (float32)(rng.NextDouble()) * 568.0f }
+                 speed = { dx = 150.0f
+                           dy = 50.0f }
                  texture = convert time <| res.textures.Item "spider"
-                 hp = 3; }
-        | 2 -> { location = { x = 1120.0f; 
-                              y = (float32)(rng.NextDouble()) * 568.0f; }
-                 speed = { dx = -150.0f;
-                           dy = 50.0f; }
+                 hp = 3
+                 score = 10 }
+        | 2 -> { location = { x = 1120.0f
+                              y = (float32)(rng.NextDouble()) * 568.0f }
+                 speed = { dx = -150.0f
+                           dy = 50.0f }
                  texture = convert time <| res.textures.Item "spider"
-                 hp = 3; }
-        | _ -> { location = { x = (float32)(rng.NextDouble()) * 1024.0f; 
-                              y = -96.0f; }
-                 speed = { dx = 0.0f;
-                           dy = 150.0f; }
-                 texture = convert time <| res.textures.Item "asteroid";
-                 hp = 10; }
+                 hp = 3
+                 score = 10 }
+        | _ -> { location = { x = (float32)(rng.NextDouble()) * 1024.0f
+                              y = -96.0f }
+                 speed = { dx = 0.0f
+                           dy = 150.0f }
+                 texture = convert time <| res.textures.Item "asteroid"
+                 hp = 10
+                 score = 25 }
 
 let private spawnEnemies res rng time state =
     if List.length state > 10

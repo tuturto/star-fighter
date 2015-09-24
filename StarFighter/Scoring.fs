@@ -2,12 +2,12 @@
 
 open Microsoft.Xna.Framework
 open RxNA.Renderer
+open Types
 
 let scoreUpdater scores deadEnemies =
     let score, highScore = scores
-    let score' = score + 10 * List.length deadEnemies
-    let highScore' = max score' highScore
-    (score', highScore')
+    let score' = List.fold (fun total enemy -> total + enemy.score) score deadEnemies
+    (score', max score' highScore)
 
 let scoreRenderer scores res time =
     scores

@@ -39,7 +39,8 @@ type Mob = { location: Location
 type Enemy = { location: Location
                speed: Speed
                texture: Texture
-               hp: int }
+               hp: int 
+               score: int }
              member this.Location = this.location     
              member this.Texture = this.texture 
 
