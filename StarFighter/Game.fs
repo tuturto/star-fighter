@@ -6,7 +6,7 @@ open Microsoft.Xna.Framework.Graphics
 open Microsoft.Xna.Framework.Input
 
 open FSharp.Control.Reactive 
-
+open System.Reactive.Subjects
 open ExtCore.Collections
 
 open RxNA.Renderer 
@@ -40,6 +40,11 @@ type Game () as this =
 
         let time = new GameTime()
 
+        let enemyBulletCollisions = new BehaviorSubject<BulletCollisionInfo list>([])
+        let playerPowerUpCollisions = new BehaviorSubject<PowerUp list>([])
+        let deadEnemies = new BehaviorSubject<Enemy list>([])
+        let rng = System.Random()        
+
         gameModeStream
         |> Observable.add
             (function | ExitingGame -> this.Exit()
@@ -49,7 +54,7 @@ type Game () as this =
 
         let starFrame = menuTimeStream
                         |> Observable.merge gameRunningTimeStream
-                        |> Observable.scanInit (initialStarField renderResources time) starsUpdater
+                        |> Observable.scanInit (initialStarField renderResources rng time) starsUpdater
                         |> Observable.map mapStarsToFrame
 
         menuRenderStream
@@ -60,7 +65,7 @@ type Game () as this =
         |> ignore
 
         let enemiesStream = gameRunningTimeStream
-                            |> Observable.scanInit (initialEnemies renderResources time) (enemiesUpdater deadEnemies.OnNext renderResources)
+                            |> Observable.scanInit (initialEnemies renderResources rng time) (enemiesUpdater deadEnemies.OnNext enemyBulletCollisions rng renderResources)
                             |> Observable.publish 
 
         let playerStream = gameRunningTimeStream
@@ -71,7 +76,7 @@ type Game () as this =
 
         let powerUpStream = gameRunningTimeStream
                             |> Observable.zip deadEnemies
-                            |> Observable.scanInit (initialPowerUps renderResources) (powerUpUpdater renderResources playerPowerUpCollisions)
+                            |> Observable.scanInit (initialPowerUps renderResources) (powerUpUpdater renderResources rng playerPowerUpCollisions)
                             |> Observable.publish 
 
         let bulletStream = gameRunningTimeStream
@@ -79,7 +84,7 @@ type Game () as this =
                            |> Observable.zip enemiesStream
                            |> Observable.zip playerActionStream
                            |> Observable.zip powerUpStream
-                           |> Observable.scanInit (initialBullets renderResources) (bulletsUpdater enemyBulletCollisions.OnNext playerPowerUpCollisions.OnNext renderResources)
+                           |> Observable.scanInit (initialBullets renderResources) (bulletsUpdater enemyBulletCollisions.OnNext playerPowerUpCollisions.OnNext rng renderResources)
                            |> Observable.publish
 
         let explosionStream = gameRunningTimeStream

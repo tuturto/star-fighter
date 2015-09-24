@@ -94,16 +94,5 @@ let enemyExplosions res time (enemy:Enemy) =
       speed = enemy.speed;
       texture = convert time <| res.textures.Item "large explosion"; }
 
-let R = System.Random()
-
 /// Current mode of the game
 let gameModeStream = new BehaviorSubject<GameMode>(Menu)
-
-let enemyBulletCollisions = 
-    new System.Reactive.Subjects.BehaviorSubject<BulletCollisionInfo list>([])
-
-let playerPowerUpCollisions = 
-    new System.Reactive.Subjects.BehaviorSubject<PowerUp list>([])
-
-let deadEnemies =
-    new System.Reactive.Subjects.BehaviorSubject<Enemy list>([])

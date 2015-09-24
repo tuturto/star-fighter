@@ -14,22 +14,22 @@ let initialBullets renderResources =
       bullets = List.empty<Mob>;
       weapon = Machinegun }
 
-let private spawnMachinegun res (gameTime:GameTime) (player:Mob) state =
+let private spawnMachinegun res (rng:System.Random) (gameTime:GameTime) (player:Mob) state =
     if (gameTime.TotalGameTime.TotalMilliseconds - state.fired) > 100.0
        then { fired = gameTime.TotalGameTime.TotalMilliseconds;
               bullets = List.append state.bullets [ { location = player.location;
-                                                      speed = { dx = (float32)(R.NextDouble() * 200.0 - 100.0)
+                                                      speed = { dx = (float32)(rng.NextDouble() * 200.0 - 100.0)
                                                                 dy = -750.0f };
                                                       texture = convert gameTime <| res.textures.Item "laser"; } ] 
               weapon = state.weapon; }
        else state
 
-let private spawnShotgun res (gameTime:GameTime) (player:Mob) state =
+let private spawnShotgun res (rng:System.Random) (gameTime:GameTime) (player:Mob) state =
     let angle = System.Math.PI / 12.0
     if (gameTime.TotalGameTime.TotalMilliseconds - state.fired) > 900.0
        then { fired = gameTime.TotalGameTime.TotalMilliseconds;
-              bullets = List.append state.bullets <| List.init 20 (fun x -> let shotAngle = R.NextDouble() * 2.0 * angle - (7.0 * angle);
-                                                                            let speed = R.NextDouble() * 100.0 + 300.0
+              bullets = List.append state.bullets <| List.init 20 (fun x -> let shotAngle = rng.NextDouble() * 2.0 * angle - (7.0 * angle);
+                                                                            let speed = rng.NextDouble() * 100.0 + 300.0
                                                                             let dx = (float32)(System.Math.Cos(shotAngle) * speed) + player.speed.dx
                                                                             let dy = (float32)(System.Math.Sin(shotAngle) * speed) + player.speed.dy
                                                                             { location = player.location;
@@ -39,27 +39,27 @@ let private spawnShotgun res (gameTime:GameTime) (player:Mob) state =
               weapon = state.weapon; }
        else state
        
-let private spawnDualshot res (gameTime:GameTime) (player:Mob) state =
+let private spawnDualshot res (rng:System.Random) (gameTime:GameTime) (player:Mob) state =
     if (gameTime.TotalGameTime.TotalMilliseconds - state.fired) > 150.0
        then { fired = gameTime.TotalGameTime.TotalMilliseconds;
               bullets = List.append state.bullets [ { location = { x = player.location.x - 40.0f; y = player.location.y + 10.0f };
-                                                      speed = { dx = (float32)(R.NextDouble() * 100.0 - 50.0)
+                                                      speed = { dx = (float32)(rng.NextDouble() * 100.0 - 50.0)
                                                                 dy = -750.0f };
                                                       texture = convert gameTime <| res.textures.Item "laser"; };
                                                     { location = { x = player.location.x + 40.0f; y = player.location.y + 10.0f };
-                                                      speed = { dx = (float32)(R.NextDouble() * 100.0 - 50.0)
+                                                      speed = { dx = (float32)(rng.NextDouble() * 100.0 - 50.0)
                                                                 dy = -750.0f };
                                                       texture = convert gameTime <| res.textures.Item "laser"; } ] 
               weapon = state.weapon; }
        else state
 
 /// Spawn new bullets if player is currently shooting
-let private spawnBullets res (gameTime:GameTime) (playerInput:GameAction []) (player:Mob) state =
+let private spawnBullets res rng (gameTime:GameTime) (playerInput:GameAction []) (player:Mob) state =
     if Array.exists (fun x -> x = Attack) playerInput
        then match state.weapon with
-                | Machinegun -> spawnMachinegun res gameTime player state
-                | Shotgun -> spawnShotgun res gameTime player state
-                | Dualshot -> spawnDualshot res gameTime player state
+                | Machinegun -> spawnMachinegun res rng gameTime player state
+                | Shotgun -> spawnShotgun res rng gameTime player state
+                | Dualshot -> spawnDualshot res rng gameTime player state
     else state
 
 /// Render a single bullet
@@ -97,9 +97,9 @@ let private checkPowerUpCollisions playerPowerUpCollisionReport gameTime player 
        else { state with weapon = collisions.Head.weapon }
 
 /// Pipeline to handle updating bullets state
-let bulletsUpdater enemyBulletCollisionReport playerPowerUpCollisionReport (res:RenderResources) state (powerUps, (playerInput, (enemies, (player, gameTime)))) =
+let bulletsUpdater enemyBulletCollisionReport playerPowerUpCollisionReport rng (res:RenderResources) state (powerUps, (playerInput, (enemies, (player, gameTime)))) =
     let bullets = checkPowerUpCollisions playerPowerUpCollisionReport gameTime player powerUps state
-                  |> spawnBullets res gameTime playerInput player
+                  |> spawnBullets res rng gameTime playerInput player
     { bullets = bullets.bullets
                 |> List.map (fun bullet -> { bullet with location = bullet.location + bullet.speed * timeCoeff gameTime})
                 |> List.filter (fun bullet -> bullet.location.y > 0.0f)

@@ -1,6 +1,7 @@
 ﻿module PowerUps
 
 open Microsoft.Xna.Framework 
+open System.Reactive.Subjects
 
 open RxNA.Renderer 
 open GameInput
@@ -8,8 +9,8 @@ open Types
 
 let initialPowerUps res = List.empty<PowerUp>
 
-let private randomPowerUp res time (enemy:Enemy) =
-    let powerUpType = match R.Next(1, 4) with 
+let private randomPowerUp res (rng:System.Random) time (enemy:Enemy) =
+    let powerUpType = match rng.Next(1, 4) with 
                       | 1 -> Machinegun
                       | 2 -> Shotgun
                       | _ -> Dualshot
@@ -22,15 +23,15 @@ let private randomPowerUp res time (enemy:Enemy) =
       texture = convert time texture;
       weapon = powerUpType; }
 
-let private spawnPowerUps res (state:PowerUp list) (deadEnemies:Enemy list) time =
+let private spawnPowerUps res (rng:System.Random) (state:PowerUp list) (deadEnemies:Enemy list) time =
     deadEnemies
-    |> List.filter (fun dead -> R.NextDouble() > 0.90)
-    |> List.map (fun dead -> randomPowerUp res time dead)
+    |> List.filter (fun dead -> rng.NextDouble() > 0.90)
+    |> List.map (fun dead -> randomPowerUp res rng time dead)
 
-let powerUpUpdater res (playerPowerUpReport:System.Reactive.Subjects.BehaviorSubject<PowerUp list>) state ((deadEnemies:Enemy list), (time:GameTime)) =
+let powerUpUpdater res rng (playerPowerUpReport:BehaviorSubject<PowerUp list>) state ((deadEnemies:Enemy list), (time:GameTime)) =
     state
     |> List.filter (fun x -> not(List.contains x playerPowerUpReport.Value))
-    |> List.append <| spawnPowerUps res state deadEnemies time
+    |> List.append <| spawnPowerUps res rng state deadEnemies time
     |> List.map (fun powerUp -> { powerUp with location = powerUp.location + powerUp.speed * timeCoeff time })
     |> List.filter (fun powerUp -> powerUp.location.y < 1120.0f )
 
