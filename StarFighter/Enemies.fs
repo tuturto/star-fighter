@@ -54,7 +54,7 @@ let enemiesUpdater deadEnemiesReport (enemyBulletCollisions:BehaviorSubject<Bull
                    |> List.map (fun x -> x.Value)
     let dead = collided
                |> List.filter (fun x -> x.hp < 2)
-    deadEnemiesReport dead
+    deadEnemiesReport <| List.distinct dead
     state 
     |> List.filter (fun enemy -> not (List.contains enemy dead))
     |> List.map (fun enemy -> if (List.contains enemy collided)

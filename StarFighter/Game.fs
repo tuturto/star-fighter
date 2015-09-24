@@ -20,6 +20,7 @@ open Bullets
 open Enemies
 open Explosions
 open PowerUps
+open Scoring
 
 type Game () as this =
     inherit Microsoft.Xna.Framework.Game()
@@ -57,13 +58,6 @@ type Game () as this =
                         |> Observable.scanInit (initialStarField renderResources rng time) starsUpdater
                         |> Observable.map mapStarsToFrame
 
-        menuRenderStream
-        |> Observable.map mapRenderStreamToFrame
-        |> Observable.merge starFrame
-        |> Observable.scanInit initialFrame menuShownRenderer
-        |> Observable.subscribe (fun x -> ())
-        |> ignore
-
         let enemiesStream = gameRunningTimeStream
                             |> Observable.scanInit (initialEnemies renderResources rng time) (enemiesUpdater deadEnemies.OnNext enemyBulletCollisions rng renderResources)
                             |> Observable.publish 
@@ -92,6 +86,19 @@ type Game () as this =
                               |> Observable.zip deadEnemies
                               |> Observable.scanInit (initialExplosions renderResources) (explosionUpdater renderResources)
 
+        let scoreStream = deadEnemies
+                          |> Observable.scanInit (0, 300) scoreUpdater
+
+        let scoreFrame = Observable.map mapScoreToFrame scoreStream
+
+        menuRenderStream
+        |> Observable.map mapRenderStreamToFrame
+        |> Observable.merge starFrame
+        |> Observable.merge scoreFrame
+        |> Observable.scanInit initialFrame menuShownRenderer
+        |> Observable.subscribe (fun x -> ())
+        |> ignore
+
         gameRunningRenderStream
         |> Observable.map mapRenderStreamToFrame
         |> Observable.merge <| Observable.map mapPlayerToFrame playerStream
@@ -100,6 +107,7 @@ type Game () as this =
         |> Observable.merge <| Observable.map mapBulletsToFrame bulletStream
         |> Observable.merge <| Observable.map mapExplosionsToFrame explosionStream
         |> Observable.merge <| Observable.map mapPowerUpsToFrame powerUpStream
+        |> Observable.merge <| scoreFrame
         |> Observable.scanInit initialFrame gameRunningRenderer
         |> Observable.subscribe (fun x -> ())
         |> ignore

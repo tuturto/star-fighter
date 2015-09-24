@@ -73,6 +73,7 @@
     <Compile Include="PowerUps.fs" />
     <Compile Include="Bullets.fs" />
     <Compile Include="Enemies.fs" />
+    <Compile Include="Scoring.fs" />
     <Compile Include="GameRenderer.fs" />
     <Compile Include="Game.fs" />
     <Compile Include="Program.fs" />
