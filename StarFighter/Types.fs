@@ -56,6 +56,15 @@ type PowerUp = { location: Location
                member this.Location = this.location     
                member this.Texture = this.texture 
 
+type SoundEvent =
+     | Silence
+     | MachinegunFired
+     | ShotgunFired
+     | DualshotFired
+     | BulletImpact
+     | Explosion
+     | PowerUpCollected
+
 type BulletInfo = { fired: float
                     weapon: PowerUpType
                     bullets: Mob list }

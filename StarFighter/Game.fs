@@ -22,6 +22,7 @@ open Enemies
 open Explosions
 open PowerUps
 open Scoring
+open Sounds
 
 type Game () as this =
     inherit Microsoft.Xna.Framework.Game()
@@ -46,6 +47,7 @@ type Game () as this =
         let enemyBulletCollisions = new BehaviorSubject<BulletCollisionInfo list>([])
         let playerPowerUpCollisions = new BehaviorSubject<PowerUp list>([])
         let deadEnemies = new BehaviorSubject<Enemy list>([])
+        let soundStream = new BehaviorSubject<SoundEvent>(Silence)
         let rng = System.Random()        
 
         gameModeStream
@@ -80,13 +82,14 @@ type Game () as this =
                            |> Observable.zip enemiesStream
                            |> Observable.zip playerActionStream
                            |> Observable.zip powerUpStream
-                           |> Observable.scanInit (initialBullets renderResources) (bulletsUpdater enemyBulletCollisions.OnNext playerPowerUpCollisions.OnNext rng renderResources)
+                           |> Observable.scanInit (initialBullets renderResources) 
+                                                  (bulletsUpdater enemyBulletCollisions.OnNext playerPowerUpCollisions.OnNext soundStream.OnNext rng renderResources)
                            |> Observable.publish
 
         let explosionStream = gameRunningTimeStream
                               |> Observable.zip enemyBulletCollisions
                               |> Observable.zip deadEnemies
-                              |> Observable.scanInit (initialExplosions renderResources) (explosionUpdater renderResources)
+                              |> Observable.scanInit (initialExplosions renderResources) (explosionUpdater renderResources soundStream.OnNext)
 
         let scoreStream = deadEnemies
                           |> Observable.scanInit (0, 300) scoreUpdater
@@ -111,6 +114,11 @@ type Game () as this =
         |> Observable.merge <| Observable.map mapPowerUpsToFrame powerUpStream
         |> Observable.merge <| scoreFrame
         |> Observable.scanInit initialFrame gameRunningRenderer
+        |> Observable.subscribe (fun x -> ())
+        |> ignore
+
+        soundStream
+        |> Observable.map (soundUpdater renderResources)
         |> Observable.subscribe (fun x -> ())
         |> ignore
 
@@ -149,7 +157,7 @@ type Game () as this =
                                .Add("blade-72", contentManager.Load<SpriteFont>("fonts/blade-72")) 
               sounds = Map.empty.Add("explosion", contentManager.Load<SoundEffect>("audio/destroyed_explosion"))
                                 .Add("power up", contentManager.Load<SoundEffect>("audio/powerup"))
-                                .Add("laser", contentManager.Load<SoundEffect>("audio/shoot_laser"))
+                                .Add("dualshot", contentManager.Load<SoundEffect>("audio/shoot_laser"))
                                 .Add("machinegun", contentManager.Load<SoundEffect>("audio/shoot_machinegun"))
                                 .Add("shotgun", contentManager.Load<SoundEffect>("audio/shoot_shotgun")) }
 

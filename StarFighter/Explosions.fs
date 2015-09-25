@@ -16,18 +16,16 @@ type ExplosionInput =
 
 let initialExplosions renderResources = List.Empty
 
-let private spawnExplosions renderResources (state:Mob list) (deadEnemies:Enemy list) collisions time =
+let private spawnExplosions renderResources playSound (state:Mob list) (deadEnemies:Enemy list) collisions time =
     if List.length deadEnemies > 0
-       then
-            let sound = renderResources.sounds.Item "explosion"
-            sound.Play() |> ignore
+       then playSound Explosion
        else ()
     List.map (impactExplosions renderResources time) collisions
     |> List.append <| List.map (enemyExplosions renderResources time) deadEnemies
     |> List.append state
 
-let explosionUpdater renderResources (state:Mob list) (deadEnemies, (collisions, time)) =
-    spawnExplosions renderResources state deadEnemies collisions time
+let explosionUpdater renderResources playSound (state:Mob list) (deadEnemies, (collisions, time)) =
+    spawnExplosions renderResources playSound state deadEnemies collisions time
     |> List.filter (fun explosion -> not (isFinished explosion.texture time))
     |> List.map (fun explosion -> { explosion with location = explosion.location + explosion.speed * timeCoeff time })
 

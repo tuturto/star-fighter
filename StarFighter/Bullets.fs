@@ -14,11 +14,10 @@ let initialBullets renderResources =
       bullets = List.empty<Mob>;
       weapon = Machinegun }
 
-let private spawnMachinegun res (rng:System.Random) (gameTime:GameTime) (player:Mob) state =
+let private spawnMachinegun res playSound (rng:System.Random) (gameTime:GameTime) (player:Mob) state =
     if (gameTime.TotalGameTime.TotalMilliseconds - state.fired) > 100.0
        then 
-            let sound = res.sounds.Item "machinegun"
-            sound.Play() |> ignore
+            playSound MachinegunFired
             { fired = gameTime.TotalGameTime.TotalMilliseconds;
               bullets = List.append state.bullets [ { location = player.location;
                                                       speed = { dx = (float32)(rng.NextDouble() * 200.0 - 100.0)
@@ -27,12 +26,11 @@ let private spawnMachinegun res (rng:System.Random) (gameTime:GameTime) (player:
               weapon = state.weapon; }
        else state
 
-let private spawnShotgun res (rng:System.Random) (gameTime:GameTime) (player:Mob) state =
+let private spawnShotgun res playSound (rng:System.Random) (gameTime:GameTime) (player:Mob) state =
     let angle = System.Math.PI / 12.0
     if (gameTime.TotalGameTime.TotalMilliseconds - state.fired) > 900.0
        then 
-            let sound = res.sounds.Item "shotgun"
-            sound.Play() |> ignore
+            playSound ShotgunFired
             { fired = gameTime.TotalGameTime.TotalMilliseconds;
               bullets = List.append state.bullets <| List.init 20 (fun x -> let shotAngle = rng.NextDouble() * 2.0 * angle - (7.0 * angle);
                                                                             let speed = rng.NextDouble() * 100.0 + 300.0
@@ -45,11 +43,10 @@ let private spawnShotgun res (rng:System.Random) (gameTime:GameTime) (player:Mob
               weapon = state.weapon; }
        else state
        
-let private spawnDualshot res (rng:System.Random) (gameTime:GameTime) (player:Mob) state =
+let private spawnDualshot res playSound (rng:System.Random) (gameTime:GameTime) (player:Mob) state =
     if (gameTime.TotalGameTime.TotalMilliseconds - state.fired) > 150.0
        then 
-            let sound = res.sounds.Item "laser"
-            sound.Play() |> ignore       
+            playSound DualshotFired       
             { fired = gameTime.TotalGameTime.TotalMilliseconds;
               bullets = List.append state.bullets [ { location = { x = player.location.x - 40.0f; y = player.location.y + 10.0f };
                                                       speed = { dx = (float32)(rng.NextDouble() * 100.0 - 50.0)
@@ -63,12 +60,12 @@ let private spawnDualshot res (rng:System.Random) (gameTime:GameTime) (player:Mo
        else state
 
 /// Spawn new bullets if player is currently shooting
-let private spawnBullets res rng (gameTime:GameTime) (playerInput:GameAction []) (player:Mob) state =
+let private spawnBullets res playSound rng (gameTime:GameTime) (playerInput:GameAction []) (player:Mob) state =
     if Array.exists (fun x -> x = Attack) playerInput
        then match state.weapon with
-                | Machinegun -> spawnMachinegun res rng gameTime player state
-                | Shotgun -> spawnShotgun res rng gameTime player state
-                | Dualshot -> spawnDualshot res rng gameTime player state
+                | Machinegun -> spawnMachinegun res playSound rng gameTime player state
+                | Shotgun -> spawnShotgun res playSound rng gameTime player state
+                | Dualshot -> spawnDualshot res playSound rng gameTime player state
     else state
 
 /// Render a single bullet
@@ -95,7 +92,7 @@ let private checkEnemyCollisions gameTime enemies bullet =
        then NoCollision (bullet, gameTime)
        else List.last collData
 
-let private checkPowerUpCollisions playerPowerUpCollisionReport res gameTime player (powerUps:PowerUp list) (state:BulletInfo) =
+let private checkPowerUpCollisions playerPowerUpCollisionReport playSound res gameTime player (powerUps:PowerUp list) (state:BulletInfo) =
     let collisions = powerUps
                      |> List.filter (fun powerUp ->
                                         let coll = collision gameTime powerUp player
@@ -103,14 +100,13 @@ let private checkPowerUpCollisions playerPowerUpCollisionReport res gameTime pla
                      |> tap playerPowerUpCollisionReport
     if collisions.IsEmpty
        then state
-       else let sound = res.sounds.Item "power up"
-            sound.Play() |> ignore
+       else playSound PowerUpCollected
             { state with weapon = collisions.Head.weapon }
 
 /// Pipeline to handle updating bullets state
-let bulletsUpdater enemyBulletCollisionReport playerPowerUpCollisionReport rng (res:RenderResources) state (powerUps, (playerInput, (enemies, (player, gameTime)))) =
-    let bullets = checkPowerUpCollisions playerPowerUpCollisionReport res gameTime player powerUps state
-                  |> spawnBullets res rng gameTime playerInput player
+let bulletsUpdater enemyBulletCollisionReport playerPowerUpCollisionReport playSound rng (res:RenderResources) state (powerUps, (playerInput, (enemies, (player, gameTime)))) =
+    let bullets = checkPowerUpCollisions playerPowerUpCollisionReport playSound res gameTime player powerUps state
+                  |> spawnBullets res playSound rng gameTime playerInput player
     { bullets = bullets.bullets
                 |> List.map (fun bullet -> { bullet with location = bullet.location + bullet.speed * timeCoeff gameTime})
                 |> List.filter (fun bullet -> bullet.location.y > 0.0f)

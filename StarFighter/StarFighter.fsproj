@@ -64,6 +64,7 @@
     <Compile Include="Renderer.fs" />
     <Compile Include="OptionExt.fs" />
     <Compile Include="Types.fs" />
+    <Compile Include="Sounds.fs" />
     <Compile Include="Collisions.fs" />
     <Compile Include="GameInput.fs" />
     <Compile Include="Explosions.fs" />
@@ -79,6 +80,18 @@
     <Compile Include="Program.fs" />
     <Content Include="packages.config" />
     <Content Include="Content\audio\destroyed_explosion.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\audio\powerup.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\audio\shoot_laser.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\audio\shoot_machinegun.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\audio\shoot_shotgun.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\fonts\blade-12.xnb">
@@ -142,18 +155,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\shotgun.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\audio\powerup.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\audio\shoot_laser.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\audio\shoot_machinegun.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\audio\shoot_shotgun.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
