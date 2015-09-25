@@ -224,3 +224,33 @@
 /processorParam:TextureFormat=Color
 /build:shotgun.png
 
+#begin audio/destroyed_explosion.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/destroyed_explosion.wav
+
+#begin audio/powerup.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/powerup.wav
+
+#begin audio/shoot_laser.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/shoot_laser.wav
+
+#begin audio/shoot_machinegun.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/shoot_machinegun.wav
+
+#begin audio/shoot_shotgun.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:audio/shoot_shotgun.wav
+

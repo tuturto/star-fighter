@@ -3,6 +3,7 @@
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Content
 open Microsoft.Xna.Framework.Graphics
+open Microsoft.Xna.Framework.Audio
 
 open System.Reactive.Subjects
 
@@ -24,13 +25,15 @@ type Texture =
 
 type TextureMap = Map<string, TextureSpecification>
 type FontMap = Map<string, SpriteFont>
+type SoundMap = Map<string, SoundEffect>
 
 [<NoComparison>]
-type RenderResources = {
-    graphics: GraphicsDevice;
-    spriteBatch: SpriteBatch;
-    textures: TextureMap;
-    fonts: FontMap; }
+type RenderResources = 
+    { graphics: GraphicsDevice
+      spriteBatch: SpriteBatch
+      textures: TextureMap
+      fonts: FontMap
+      sounds: SoundMap }
 
 let renderStream =
     new Subject<RenderResources * GameTime>()

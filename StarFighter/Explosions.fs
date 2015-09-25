@@ -17,6 +17,11 @@ type ExplosionInput =
 let initialExplosions renderResources = List.Empty
 
 let private spawnExplosions renderResources (state:Mob list) (deadEnemies:Enemy list) collisions time =
+    if List.length deadEnemies > 0
+       then
+            let sound = renderResources.sounds.Item "explosion"
+            sound.Play() |> ignore
+       else ()
     List.map (impactExplosions renderResources time) collisions
     |> List.append <| List.map (enemyExplosions renderResources time) deadEnemies
     |> List.append state

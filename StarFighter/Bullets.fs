@@ -16,7 +16,10 @@ let initialBullets renderResources =
 
 let private spawnMachinegun res (rng:System.Random) (gameTime:GameTime) (player:Mob) state =
     if (gameTime.TotalGameTime.TotalMilliseconds - state.fired) > 100.0
-       then { fired = gameTime.TotalGameTime.TotalMilliseconds;
+       then 
+            let sound = res.sounds.Item "machinegun"
+            sound.Play() |> ignore
+            { fired = gameTime.TotalGameTime.TotalMilliseconds;
               bullets = List.append state.bullets [ { location = player.location;
                                                       speed = { dx = (float32)(rng.NextDouble() * 200.0 - 100.0)
                                                                 dy = -750.0f };
@@ -27,7 +30,10 @@ let private spawnMachinegun res (rng:System.Random) (gameTime:GameTime) (player:
 let private spawnShotgun res (rng:System.Random) (gameTime:GameTime) (player:Mob) state =
     let angle = System.Math.PI / 12.0
     if (gameTime.TotalGameTime.TotalMilliseconds - state.fired) > 900.0
-       then { fired = gameTime.TotalGameTime.TotalMilliseconds;
+       then 
+            let sound = res.sounds.Item "shotgun"
+            sound.Play() |> ignore
+            { fired = gameTime.TotalGameTime.TotalMilliseconds;
               bullets = List.append state.bullets <| List.init 20 (fun x -> let shotAngle = rng.NextDouble() * 2.0 * angle - (7.0 * angle);
                                                                             let speed = rng.NextDouble() * 100.0 + 300.0
                                                                             let dx = (float32)(System.Math.Cos(shotAngle) * speed) + player.speed.dx
@@ -41,7 +47,10 @@ let private spawnShotgun res (rng:System.Random) (gameTime:GameTime) (player:Mob
        
 let private spawnDualshot res (rng:System.Random) (gameTime:GameTime) (player:Mob) state =
     if (gameTime.TotalGameTime.TotalMilliseconds - state.fired) > 150.0
-       then { fired = gameTime.TotalGameTime.TotalMilliseconds;
+       then 
+            let sound = res.sounds.Item "laser"
+            sound.Play() |> ignore       
+            { fired = gameTime.TotalGameTime.TotalMilliseconds;
               bullets = List.append state.bullets [ { location = { x = player.location.x - 40.0f; y = player.location.y + 10.0f };
                                                       speed = { dx = (float32)(rng.NextDouble() * 100.0 - 50.0)
                                                                 dy = -750.0f };
@@ -86,7 +95,7 @@ let private checkEnemyCollisions gameTime enemies bullet =
        then NoCollision (bullet, gameTime)
        else List.last collData
 
-let private checkPowerUpCollisions playerPowerUpCollisionReport gameTime player (powerUps:PowerUp list) (state:BulletInfo) =
+let private checkPowerUpCollisions playerPowerUpCollisionReport res gameTime player (powerUps:PowerUp list) (state:BulletInfo) =
     let collisions = powerUps
                      |> List.filter (fun powerUp ->
                                         let coll = collision gameTime powerUp player
@@ -94,11 +103,13 @@ let private checkPowerUpCollisions playerPowerUpCollisionReport gameTime player 
                      |> tap playerPowerUpCollisionReport
     if collisions.IsEmpty
        then state
-       else { state with weapon = collisions.Head.weapon }
+       else let sound = res.sounds.Item "power up"
+            sound.Play() |> ignore
+            { state with weapon = collisions.Head.weapon }
 
 /// Pipeline to handle updating bullets state
 let bulletsUpdater enemyBulletCollisionReport playerPowerUpCollisionReport rng (res:RenderResources) state (powerUps, (playerInput, (enemies, (player, gameTime)))) =
-    let bullets = checkPowerUpCollisions playerPowerUpCollisionReport gameTime player powerUps state
+    let bullets = checkPowerUpCollisions playerPowerUpCollisionReport res gameTime player powerUps state
                   |> spawnBullets res rng gameTime playerInput player
     { bullets = bullets.bullets
                 |> List.map (fun bullet -> { bullet with location = bullet.location + bullet.speed * timeCoeff gameTime})
