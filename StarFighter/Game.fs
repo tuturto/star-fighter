@@ -131,6 +131,9 @@ type Game () as this =
 
     override this.LoadContent() =
         let texture = loadTexture contentManager
+        let frame = loadAnimationFrame contentManager
+        let font = loadFont contentManager
+        let sfx = loadSfx contentManager
         renderResources <-
             { RxNA.Renderer.RenderResources.graphics = this.GraphicsDevice;
               spriteBatch = new SpriteBatch(this.GraphicsDevice);
@@ -141,25 +144,25 @@ type Game () as this =
                                   .Add("dualshot", texture "dualshot")
                                   .Add("machinegun", texture "machinegun")
                                   .Add("shotgun", texture "shotgun")
-                                  .Add("small explosion", Animation [ loadAnimationFrame contentManager "small_explosion_f1" 100.0;
-                                                                      loadAnimationFrame contentManager "small_explosion_f2" 200.0;
-                                                                      loadAnimationFrame contentManager "small_explosion_f3" 300.0; ])
-                                  .Add("large explosion", Animation [ loadAnimationFrame contentManager "large_explosion_f1" 100.0;
-                                                                      loadAnimationFrame contentManager "large_explosion_f2" 200.0;
-                                                                      loadAnimationFrame contentManager "large_explosion_f3" 300.0;
-                                                                      loadAnimationFrame contentManager "large_explosion_f4" 400.0;
-                                                                      loadAnimationFrame contentManager "large_explosion_f5" 500.0; ])
-                                  .Add("spider", LoopingAnimation [ loadAnimationFrame contentManager "spider_f1" 300.0;
-                                                                    loadAnimationFrame contentManager "spider_f2" 600.0; ])  
-              fonts = Map.empty.Add("blade-12", contentManager.Load<SpriteFont>("fonts/blade-12"))
-                               .Add("blade-48", contentManager.Load<SpriteFont>("fonts/blade-48"))
-                               .Add("blade-54", contentManager.Load<SpriteFont>("fonts/blade-54"))
-                               .Add("blade-72", contentManager.Load<SpriteFont>("fonts/blade-72")) 
-              sounds = Map.empty.Add("explosion", contentManager.Load<SoundEffect>("audio/destroyed_explosion"))
-                                .Add("power up", contentManager.Load<SoundEffect>("audio/powerup"))
-                                .Add("dualshot", contentManager.Load<SoundEffect>("audio/shoot_laser"))
-                                .Add("machinegun", contentManager.Load<SoundEffect>("audio/shoot_machinegun"))
-                                .Add("shotgun", contentManager.Load<SoundEffect>("audio/shoot_shotgun")) }
+                                  .Add("small explosion", Animation [ frame "small_explosion_f1" 100.0;
+                                                                      frame "small_explosion_f2" 200.0;
+                                                                      frame "small_explosion_f3" 300.0; ])
+                                  .Add("large explosion", Animation [ frame "large_explosion_f1" 100.0;
+                                                                      frame "large_explosion_f2" 200.0;
+                                                                      frame "large_explosion_f3" 300.0;
+                                                                      frame "large_explosion_f4" 400.0;
+                                                                      frame "large_explosion_f5" 500.0; ])
+                                  .Add("spider", LoopingAnimation [ frame "spider_f1" 300.0;
+                                                                    frame "spider_f2" 600.0; ])  
+              fonts = Map.empty.Add("blade-12", font "fonts/blade-12")
+                               .Add("blade-48", font "fonts/blade-48")
+                               .Add("blade-54", font "fonts/blade-54")
+                               .Add("blade-72", font "fonts/blade-72")
+              sounds = Map.empty.Add("explosion", sfx "audio/destroyed_explosion")
+                                .Add("power up", sfx "audio/powerup")
+                                .Add("dualshot", sfx "audio/shoot_laser")
+                                .Add("machinegun", sfx "audio/shoot_machinegun")
+                                .Add("shotgun", sfx "audio/shoot_shotgun") }
 
     override this.Update gameTime =
         RxNA.Input.mouseStateStream.OnNext(Mouse.GetState())

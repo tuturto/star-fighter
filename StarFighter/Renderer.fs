@@ -50,6 +50,12 @@ let loadTexture (contentManager:ContentManager) resourceName =
 let loadAnimationFrame (contentManager:ContentManager) resourceName duration =
     Timed(contentManager.Load<Texture2D>(resourceName), duration)
 
+let loadFont (contentManager:ContentManager) resourceName =
+    contentManager.Load<SpriteFont>(resourceName)
+
+let loadSfx (contentManager:ContentManager) resourceName =
+    contentManager.Load<SoundEffect>(resourceName)
+
 let currentFrame (gameTime:GameTime) texture =
     match texture with
         | SingleFrame (t, d) -> t
