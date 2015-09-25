@@ -5,7 +5,7 @@ open Microsoft.Xna.Framework.Audio
 open RxNA.Renderer 
 open Types
 
-let soundUpdater (res:RenderResources) (event:SoundEvent) =
+let soundUpdater res event =
     match event with 
         | Silence -> false
         | MachinegunFired -> (res.sounds.Item "machinegun").Play()
