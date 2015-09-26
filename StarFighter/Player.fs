@@ -56,7 +56,7 @@ let addMovementActions (ship:Mob) action =
                        | _ -> ship.speed
     { ship with speed = newSpeed }
 
-let playerUpdater (state:Player) ((enemies:Enemy list), ((actions:GameAction []), (time:GameTime))) =
+let playerUpdater playSound (state:Player) ((enemies:Enemy list), ((actions:GameAction []), (time:GameTime))) =
     match state with
         | NormalPlayer ship ->
                 let collisionPoints = List.map (collision time ship) enemies
@@ -67,9 +67,12 @@ let playerUpdater (state:Player) ((enemies:Enemy list), ((actions:GameAction [])
                                                    | Attack -> ship)
                                            ship
                                            actions
-                NormalPlayer({ newState with location = if List.isEmpty collisionPoints
-                                                           then newState.location + newState.speed * timeCoeff time * 250.0f
-                                                           else { x = 464.0f; y = 600.0f }})
+                if List.isEmpty collisionPoints
+                   then NormalPlayer ({ newState with location = newState.location + newState.speed * timeCoeff time * 250.0f })
+                   else playSound Explosion
+                        ExplodingPlayer ({ location = newState.location + newState.speed * timeCoeff time * 250.0f
+                                           speed = newState.speed
+                                           explosionTime = time.TotalGameTime.TotalMilliseconds })
         | ExplodingPlayer _ -> state
 
 let playerRenderer state res time = 

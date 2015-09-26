@@ -69,7 +69,7 @@ type Game () as this =
         let playerStream = gameRunningTimeStream
                            |> Observable.zip playerActionStream
                            |> Observable.zip enemiesStream
-                           |> Observable.scanInit (initialPlayer renderResources time) playerUpdater
+                           |> Observable.scanInit (initialPlayer renderResources time) (playerUpdater soundStream.OnNext)
                            |> Observable.publish
 
         let powerUpStream = gameRunningTimeStream
@@ -89,6 +89,7 @@ type Game () as this =
         let explosionStream = gameRunningTimeStream
                               |> Observable.zip enemyBulletCollisions
                               |> Observable.zip deadEnemies
+                              |> Observable.zip playerStream
                               |> Observable.scanInit (initialExplosions renderResources) (explosionUpdater renderResources soundStream.OnNext)
 
         let scoreStream = deadEnemies

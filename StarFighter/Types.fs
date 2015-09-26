@@ -44,9 +44,15 @@ type Enemy = { location: Location
              member this.Location = this.location     
              member this.Texture = this.texture 
 
+type ExplodingPlayerInfo = { location: Location
+                             speed: Speed 
+                             explosionTime: float }
+                           member this.Location = this.location
+                           member this.Texture = this.Texture
+
 type Player =
      | NormalPlayer of Mob
-     | ExplodingPlayer of float
+     | ExplodingPlayer of ExplodingPlayerInfo
 
 type PowerUpType =
     | Machinegun
@@ -96,17 +102,6 @@ type BulletCollisionInfo =
         match this with
             | EnemyCollision (_, _, location, _) -> Some location
             | NoCollision _ -> None
-
-let impactExplosions res time (info:BulletCollisionInfo) =
-    let enemy = info.Enemy.Value 
-    { Mob.location = info.Location.Value;
-      speed = enemy.speed;
-      texture = convert time <| res.textures.Item "small explosion"; }
-
-let enemyExplosions res time (enemy:Enemy) =
-    { Mob.location = enemy.location ;
-      speed = enemy.speed;
-      texture = convert time <| res.textures.Item "large explosion"; }
 
 /// Current mode of the game
 let gameModeStream = new BehaviorSubject<GameMode>(Menu)
