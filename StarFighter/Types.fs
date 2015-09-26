@@ -44,6 +44,10 @@ type Enemy = { location: Location
              member this.Location = this.location     
              member this.Texture = this.texture 
 
+type Player =
+     | NormalPlayer of Mob
+     | ExplodingPlayer of float
+
 type PowerUpType =
     | Machinegun
     | Shotgun

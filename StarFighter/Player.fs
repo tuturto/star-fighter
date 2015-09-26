@@ -41,38 +41,44 @@ let playerActionStream = playerActionStreamKeys
                          |> Observable.publish
 
 let initialPlayer res time = 
-    { Mob.location = { x = 464.0f;
-                       y = 600.0f; }
-      speed = { dx = 0.0f;
-                dy = 0.0f; }
-      texture = convert time <| res.textures.Item "player"; } 
+    NormalPlayer ({ Mob.location = { x = 464.0f;
+                                     y = 600.0f; }
+                    speed = { dx = 0.0f;
+                              dy = 0.0f; }
+                    texture = convert time <| res.textures.Item "player"; } )    
 
-let addMovementActions (state:Mob) action =
+let addMovementActions (ship:Mob) action =
     let newSpeed = match action with
                        | Move (0.0f, 0.0f) -> { dx=0.0f; dy=0.0f; }
-                       | Move (dx, 0.0f) -> { state.speed with dx=dx; }
-                       | Move (0.0f, dy) -> { state.speed with dy=dy; }
+                       | Move (dx, 0.0f) -> { ship.speed with dx=dx; }
+                       | Move (0.0f, dy) -> { ship.speed with dy=dy; }
                        | Move (dx, dy) -> { dx=dx; dy=dy; }
-                       | _ -> state.speed
-    { state with speed = newSpeed }
+                       | _ -> ship.speed
+    { ship with speed = newSpeed }
 
-let playerUpdater (state:Mob) ((enemies:Enemy list), ((actions:GameAction []), (time:GameTime))) =
-    let collisionPoints = List.map (collision time state) enemies
-                          |> List.filter (fun x -> x.IsSome)
-    let newState = Array.fold (fun acc item ->
-                                    match item with
-                                        | Move (dx, dy) -> addMovementActions acc item
-                                        | Attack -> state)
-                              state
-                              actions
-    { newState with location = if List.isEmpty collisionPoints
-                                  then newState.location + newState.speed * timeCoeff time * 250.0f
-                                  else { x = 464.0f; y = 600.0f }}
+let playerUpdater (state:Player) ((enemies:Enemy list), ((actions:GameAction []), (time:GameTime))) =
+    match state with
+        | NormalPlayer ship ->
+                let collisionPoints = List.map (collision time ship) enemies
+                                      |> List.filter (fun x -> x.IsSome)
+                let newState = Array.fold (fun acc item ->
+                                               match item with
+                                                   | Move (dx, dy) -> addMovementActions acc item
+                                                   | Attack -> ship)
+                                           ship
+                                           actions
+                NormalPlayer({ newState with location = if List.isEmpty collisionPoints
+                                                           then newState.location + newState.speed * timeCoeff time * 250.0f
+                                                           else { x = 464.0f; y = 600.0f }})
+        | ExplodingPlayer _ -> state
 
-let playerRenderer (state:Mob option) res time = 
-    Option.iter (fun (player:Mob) ->
-                    let texture = currentFrame time player.texture 
-                    res.spriteBatch.Draw(texture, 
-                                         Vector2(player.location.x - (float32)texture.Width / 2.0f, 
-                                                 player.location.y - (float32)texture.Height / 2.0f), 
-                                         Color.White)) state
+let playerRenderer state res time = 
+    Option.iter (fun player ->
+                    match player with
+                        | NormalPlayer ship ->
+                                let texture = currentFrame time ship.texture 
+                                res.spriteBatch.Draw(texture, 
+                                                     Vector2(ship.location.x - (float32)texture.Width / 2.0f, 
+                                                             ship.location.y - (float32)texture.Height / 2.0f), 
+                                                     Color.White)
+                        | ExplodingPlayer _ -> ()) state

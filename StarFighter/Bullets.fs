@@ -60,13 +60,16 @@ let private spawnDualshot res playSound (rng:System.Random) (gameTime:GameTime) 
        else state
 
 /// Spawn new bullets if player is currently shooting
-let private spawnBullets res playSound rng (gameTime:GameTime) (playerInput:GameAction []) (player:Mob) state =
-    if Array.exists (fun x -> x = Attack) playerInput
-       then match state.weapon with
-                | Machinegun -> spawnMachinegun res playSound rng gameTime player state
-                | Shotgun -> spawnShotgun res playSound rng gameTime player state
-                | Dualshot -> spawnDualshot res playSound rng gameTime player state
-    else state
+let private spawnBullets res playSound rng gameTime (playerInput:GameAction []) player state =
+    match player with 
+        | NormalPlayer ship ->
+                if Array.exists (fun x -> x = Attack) playerInput
+                   then match state.weapon with
+                        | Machinegun -> spawnMachinegun res playSound rng gameTime ship state
+                        | Shotgun -> spawnShotgun res playSound rng gameTime ship state
+                        | Dualshot -> spawnDualshot res playSound rng gameTime ship state
+                else state
+        | ExplodingPlayer _ -> state
 
 /// Render a single bullet
 let private renderBullet res time (bullet:Mob) =
@@ -93,18 +96,21 @@ let private checkEnemyCollisions gameTime enemies bullet =
        else List.last collData
 
 let private checkPowerUpCollisions playerPowerUpCollisionReport playSound res gameTime player (powerUps:PowerUp list) (state:BulletInfo) =
-    let collisions = powerUps
-                     |> List.filter (fun powerUp ->
-                                        let coll = collision gameTime powerUp player
-                                        coll.IsSome)
-                     |> tap playerPowerUpCollisionReport
-    if collisions.IsEmpty
-       then state
-       else playSound PowerUpCollected
-            { state with weapon = collisions.Head.weapon }
+    match player with
+        | NormalPlayer ship ->
+                let collisions = powerUps
+                                 |> List.filter (fun powerUp ->
+                                                    let coll = collision gameTime powerUp ship
+                                                    coll.IsSome)
+                                 |> tap playerPowerUpCollisionReport
+                if collisions.IsEmpty
+                   then state
+                   else playSound PowerUpCollected
+                        { state with weapon = collisions.Head.weapon }
+        | ExplodingPlayer _ -> state
 
 /// Pipeline to handle updating bullets state
-let bulletsUpdater enemyBulletCollisionReport playerPowerUpCollisionReport playSound rng (res:RenderResources) state (powerUps, (playerInput, (enemies, (player, gameTime)))) =
+let bulletsUpdater enemyBulletCollisionReport playerPowerUpCollisionReport playSound rng res state (powerUps, (playerInput, (enemies, (player, gameTime)))) =
     let bullets = checkPowerUpCollisions playerPowerUpCollisionReport playSound res gameTime player powerUps state
                   |> spawnBullets res playSound rng gameTime playerInput player
     { bullets = bullets.bullets

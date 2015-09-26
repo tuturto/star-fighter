@@ -22,7 +22,7 @@ let gameRunningRenderStream =
     |> Observable.filter (fun res -> gameModeStream.Value = GameRunning)
 
 type Frame =
-    { player: Mob option
+    { player: Player option
       enemies: Enemy list option
       bullets: Mob list option
       explosions: Mob list option
