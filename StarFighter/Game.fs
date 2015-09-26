@@ -90,7 +90,7 @@ type Game () as this =
                               |> Observable.zip enemyBulletCollisions
                               |> Observable.zip deadEnemies
                               |> Observable.zip playerStream
-                              |> Observable.scanInit (initialExplosions renderResources) (explosionUpdater renderResources soundStream.OnNext)
+                              |> Observable.scanInit (initialExplosions renderResources) (explosionUpdater renderResources rng soundStream.OnNext)
 
         let scoreStream = deadEnemies
                           |> Observable.scanInit (0, 300) scoreUpdater

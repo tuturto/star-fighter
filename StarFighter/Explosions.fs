@@ -27,25 +27,28 @@ let private enemyExplosions res time (enemy:Enemy) =
       speed = enemy.speed
       texture = convert time <| res.textures.Item "large explosion" }
 
-let private playerExplosions res time player =
+let private playerExplosions res (rng:System.Random) (time:GameTime) player =
     match player with
         | NormalPlayer _ -> List.empty
         | ExplodingPlayer ship -> 
-                [ { Mob.location = ship.location
-                    speed = ship.speed
-                    texture = convert time <| res.textures.Item "large explosion" } ]
+                if ship.explosionTime + 100.0 > time.TotalGameTime.TotalMilliseconds 
+                   then [ { Mob.location = { x = ship.location.x + (float32)(rng.NextDouble() * 50.0 - 25.0)
+                                             y = ship.location.y + (float32)(rng.NextDouble() * 50.0 - 25.0) }
+                            speed = ship.speed
+                            texture = convert time <| res.textures.Item "large explosion" } ]
+                   else List.empty
 
-let private spawnExplosions renderResources playSound state player deadEnemies collisions time =
+let private spawnExplosions renderResources rng playSound state player deadEnemies collisions time =
     if List.length deadEnemies > 0
        then playSound Explosion
        else ()
     List.map (impactExplosions renderResources time) collisions
     |> List.append <| List.map (enemyExplosions renderResources time) deadEnemies
-    |> List.append <| playerExplosions renderResources time player
+    |> List.append <| playerExplosions renderResources rng time player
     |> List.append state
 
-let explosionUpdater renderResources playSound (state:Mob list) (player, (deadEnemies, (collisions, time))) =
-    spawnExplosions renderResources playSound state player deadEnemies collisions time
+let explosionUpdater renderResources rng playSound (state:Mob list) (player, (deadEnemies, (collisions, time))) =
+    spawnExplosions renderResources rng playSound state player deadEnemies collisions time
     |> List.filter (fun explosion -> not (isFinished explosion.texture time))
     |> List.map (fun explosion -> { explosion with location = explosion.location + explosion.speed * timeCoeff time })
 
