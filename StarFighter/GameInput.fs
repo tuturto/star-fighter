@@ -26,5 +26,10 @@ let gameRunningTimeStream =
     |> Observable.filter (fun x -> gameModeStream.Value = GameRunning)
     |> Observable.publish
 
+let readyScreenTimeStream =
+    gameTimeStream
+    |> Observable.filter (fun x -> gameModeStream.Value = ReadyScreen)
+    |> Observable.publish
+
 let timeCoeff (gameTime:GameTime) = 
     (float32)(gameTime.ElapsedGameTime.TotalMilliseconds / 1000.0)

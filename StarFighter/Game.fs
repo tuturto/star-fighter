@@ -78,7 +78,9 @@ type Game () as this =
                                 match player with
                                     | NormalPlayer _ -> ()
                                     | ExplodingPlayer info -> if info.explosionTime + 3000.0 < time.TotalGameTime.TotalMilliseconds 
-                                                                 then gameModeStream.OnNext ReadyScreen
+                                                                 then if info.lives > 0
+                                                                         then gameModeStream.OnNext ReadyScreen
+                                                                         else gameModeStream.OnNext Menu
                                                                  else ())
 
         let powerUpStream = gameRunningTimeStream
@@ -147,6 +149,7 @@ type Game () as this =
         playerStream.Connect() |> ignore
         powerUpStream.Connect() |> ignore
         scoreStream.Connect() |> ignore
+        readyScreenTimeStream.Connect() |> ignore
 
     override this.LoadContent() =
         let texture = loadTexture contentManager
