@@ -8,6 +8,7 @@ open RxNA.Renderer
 type GameMode =
     | Menu
     | GameRunning
+    | ReadyScreen
     | ExitingGame
 
 type Speed = 
@@ -44,14 +45,20 @@ type Enemy = { location: Location
              member this.Location = this.location     
              member this.Texture = this.texture 
 
+type NormalPlayerInfo = { location: Location
+                          speed: Speed
+                          texture: Texture
+                          lives: int }
+                        member this.Location = this.location
+                        member this.Texture = this.texture
+
 type ExplodingPlayerInfo = { location: Location
                              speed: Speed 
-                             explosionTime: float }
-                           member this.Location = this.location
-                           member this.Texture = this.Texture
+                             explosionTime: float
+                             lives: int }
 
 type Player =
-     | NormalPlayer of Mob
+     | NormalPlayer of NormalPlayerInfo
      | ExplodingPlayer of ExplodingPlayerInfo
 
 type PowerUpType =

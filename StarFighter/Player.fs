@@ -41,13 +41,14 @@ let playerActionStream = playerActionStreamKeys
                          |> Observable.publish
 
 let initialPlayer res time = 
-    NormalPlayer ({ Mob.location = { x = 464.0f;
-                                     y = 600.0f; }
-                    speed = { dx = 0.0f;
-                              dy = 0.0f; }
-                    texture = convert time <| res.textures.Item "player"; } )    
+    NormalPlayer ({ location = { x = 464.0f
+                                     y = 600.0f }
+                    speed = { dx = 0.0f
+                              dy = 0.0f }
+                    lives = 3
+                    texture = convert time <| res.textures.Item "player" } )
 
-let addMovementActions (ship:Mob) action =
+let addMovementActions (ship:NormalPlayerInfo) action =
     let newSpeed = match action with
                        | Move (0.0f, 0.0f) -> { dx=0.0f; dy=0.0f; }
                        | Move (dx, 0.0f) -> { ship.speed with dx=dx; }
@@ -58,7 +59,7 @@ let addMovementActions (ship:Mob) action =
 
 let playerUpdater playSound (state:Player) ((enemies:Enemy list), ((actions:GameAction []), (time:GameTime))) =
     match state with
-        | NormalPlayer ship ->
+        | NormalPlayer (ship:NormalPlayerInfo) ->
                 let collisionPoints = List.map (collision time ship) enemies
                                       |> List.filter (fun x -> x.IsSome)
                 let newState = Array.fold (fun acc item ->
@@ -72,7 +73,8 @@ let playerUpdater playSound (state:Player) ((enemies:Enemy list), ((actions:Game
                    else playSound Explosion
                         ExplodingPlayer ({ location = newState.location + newState.speed * timeCoeff time * 250.0f
                                            speed = newState.speed
-                                           explosionTime = time.TotalGameTime.TotalMilliseconds })
+                                           explosionTime = time.TotalGameTime.TotalMilliseconds
+                                           lives =  ship.lives })
         | ExplodingPlayer _ -> state
 
 let playerRenderer state res time = 

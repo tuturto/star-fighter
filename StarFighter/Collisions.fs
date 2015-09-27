@@ -23,6 +23,8 @@ let inline pixelPerfectCollision mob1 mob2 =
     None
 
 let inline collision gameTime mob1 mob2 =
+    let location2 = (^b : (member Location : Location) mob2)
+    let texture2 = currentFrame gameTime (^b : (member Texture : Texture) mob2)
     maybe {
             return! boundingSphereCollision gameTime mob1 mob2
     }

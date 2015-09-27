@@ -14,7 +14,7 @@ let initialBullets renderResources =
       bullets = List.empty<Mob>;
       weapon = Machinegun }
 
-let private spawnMachinegun res playSound (rng:System.Random) (gameTime:GameTime) (player:Mob) state =
+let private spawnMachinegun res playSound (rng:System.Random) (gameTime:GameTime) (player:NormalPlayerInfo) state =
     if (gameTime.TotalGameTime.TotalMilliseconds - state.fired) > 100.0
        then 
             playSound MachinegunFired
@@ -26,7 +26,7 @@ let private spawnMachinegun res playSound (rng:System.Random) (gameTime:GameTime
               weapon = state.weapon; }
        else state
 
-let private spawnShotgun res playSound (rng:System.Random) (gameTime:GameTime) (player:Mob) state =
+let private spawnShotgun res playSound (rng:System.Random) (gameTime:GameTime) (player:NormalPlayerInfo) state =
     let angle = System.Math.PI / 12.0
     if (gameTime.TotalGameTime.TotalMilliseconds - state.fired) > 900.0
        then 
@@ -43,7 +43,7 @@ let private spawnShotgun res playSound (rng:System.Random) (gameTime:GameTime) (
               weapon = state.weapon; }
        else state
        
-let private spawnDualshot res playSound (rng:System.Random) (gameTime:GameTime) (player:Mob) state =
+let private spawnDualshot res playSound (rng:System.Random) (gameTime:GameTime) (player:NormalPlayerInfo) state =
     if (gameTime.TotalGameTime.TotalMilliseconds - state.fired) > 150.0
        then 
             playSound DualshotFired       

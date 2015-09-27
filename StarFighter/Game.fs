@@ -72,6 +72,15 @@ type Game () as this =
                            |> Observable.scanInit (initialPlayer renderResources time) (playerUpdater soundStream.OnNext)
                            |> Observable.publish
 
+        playerStream
+        |> Observable.zip gameRunningTimeStream
+        |> Observable.add (fun (time, player) -> 
+                                match player with
+                                    | NormalPlayer _ -> ()
+                                    | ExplodingPlayer info -> if info.explosionTime + 3000.0 < time.TotalGameTime.TotalMilliseconds 
+                                                                 then gameModeStream.OnNext ReadyScreen
+                                                                 else ())
+
         let powerUpStream = gameRunningTimeStream
                             |> Observable.zip deadEnemies
                             |> Observable.scanInit (initialPowerUps renderResources) (powerUpUpdater renderResources rng playerPowerUpCollisions)
