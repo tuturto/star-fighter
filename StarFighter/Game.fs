@@ -57,10 +57,10 @@ type Game () as this =
 
         Observable.subscribe menuInputHandler menuActionStream |> ignore
 
-        let starFrame = menuTimeStream
-                        |> Observable.merge gameRunningTimeStream
-                        |> Observable.scanInit (initialStarField renderResources rng time) starsUpdater
-                        |> Observable.map mapStarsToFrame
+        let starStream = menuTimeStream
+                         |> Observable.merge gameRunningTimeStream
+                         |> Observable.scanInit (initialStarField renderResources rng time) starsUpdater
+                         |> Observable.publish
 
         let enemiesStream = gameRunningTimeStream
                             |> Observable.scanInit (initialEnemies renderResources rng time) (enemiesUpdater deadEnemies.OnNext enemyBulletCollisions rng renderResources)
@@ -103,13 +103,12 @@ type Game () as this =
 
         let scoreStream = deadEnemies
                           |> Observable.scanInit (0, 300) scoreUpdater
-
-        let scoreFrame = Observable.map mapScoreToFrame scoreStream
+                          |> Observable.publish
 
         menuRenderStream
         |> Observable.map mapRenderStreamToFrame
-        |> Observable.merge starFrame
-        |> Observable.merge scoreFrame
+        |> Observable.merge <| Observable.map mapStarsToFrame starStream
+        |> Observable.merge <| Observable.map mapScoreToFrame scoreStream
         |> Observable.scanInit initialFrame menuShownRenderer
         |> Observable.subscribe (fun x -> ())
         |> ignore
@@ -118,11 +117,11 @@ type Game () as this =
         |> Observable.map mapRenderStreamToFrame
         |> Observable.merge <| Observable.map mapPlayerToFrame playerStream
         |> Observable.merge <| Observable.map mapEnemiesToFrame enemiesStream
-        |> Observable.merge starFrame
+        |> Observable.merge <| Observable.map mapStarsToFrame starStream
         |> Observable.merge <| Observable.map mapBulletsToFrame bulletStream
         |> Observable.merge <| Observable.map mapExplosionsToFrame explosionStream
         |> Observable.merge <| Observable.map mapPowerUpsToFrame powerUpStream
-        |> Observable.merge <| scoreFrame
+        |> Observable.merge <| Observable.map mapScoreToFrame scoreStream
         |> Observable.scanInit initialFrame gameRunningRenderer
         |> Observable.subscribe (fun x -> ())
         |> ignore
@@ -130,7 +129,7 @@ type Game () as this =
         readyScreenRenderStream
         |> Observable.map mapRenderStreamToFrame
         |> Observable.merge <| Observable.map mapPlayerToFrame playerStream
-        |> Observable.merge <| scoreFrame
+        |> Observable.merge <| Observable.map mapScoreToFrame scoreStream
         |> Observable.scanInit initialFrame readyScreenRenderer
         |> Observable.subscribe (fun x -> ())
         |> ignore
@@ -140,12 +139,14 @@ type Game () as this =
         |> Observable.subscribe (fun x -> ())
         |> ignore
 
+        starStream.Connect() |> ignore
         bulletStream.Connect() |> ignore
         playerActionStream.Connect() |> ignore
         gameRunningTimeStream.Connect() |> ignore
         enemiesStream.Connect() |> ignore
         playerStream.Connect() |> ignore
         powerUpStream.Connect() |> ignore
+        scoreStream.Connect() |> ignore
 
     override this.LoadContent() =
         let texture = loadTexture contentManager
