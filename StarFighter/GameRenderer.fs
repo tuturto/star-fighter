@@ -21,6 +21,10 @@ let gameRunningRenderStream =
     renderStream
     |> Observable.filter (fun res -> gameModeStream.Value = GameRunning)
 
+let readyScreenRenderStream =
+    renderStream
+    |> Observable.filter (fun res -> gameModeStream.Value = ReadyScreen)
+
 type Frame =
     { player: Player option
       enemies: Enemy list option
@@ -186,4 +190,20 @@ let gameRunningRenderer frame frameStream =
                             powerUpsRenderer newFrame.powerUps res time
                             scoreRenderer newFrame.score res time) frameStream.renderResources
         else ()
+    newFrame
+
+let readyScreenRenderer frame frameStream =
+    let newFrame = frame ++ frameStream
+    if frame.time.IsSome
+       then Option.iter (fun res -> 
+                                let time = frame.time.Value 
+                                let font = res.fonts.Item "blade-12"
+                                let lives = match newFrame.player.Value with
+                                                | NormalPlayer x -> x.lives 
+                                                | ExplodingPlayer x -> x.lives
+                                res.spriteBatch.DrawString(font, "get ready!", Vector2(455.0f, 300.0f), Color.White)
+                                res.spriteBatch.DrawString(font, "ships left:", Vector2(445.0f, 350.0f), Color.White)
+                                res.spriteBatch.DrawString(font, lives.ToString(), Vector2(575.0f, 350.0f), Color.White)
+                                scoreRenderer newFrame.score res time) frameStream.renderResources
+       else ()
     newFrame

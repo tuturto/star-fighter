@@ -127,6 +127,14 @@ type Game () as this =
         |> Observable.subscribe (fun x -> ())
         |> ignore
 
+        readyScreenRenderStream
+        |> Observable.map mapRenderStreamToFrame
+        |> Observable.merge <| Observable.map mapPlayerToFrame playerStream
+        |> Observable.merge <| scoreFrame
+        |> Observable.scanInit initialFrame readyScreenRenderer
+        |> Observable.subscribe (fun x -> ())
+        |> ignore
+
         soundStream
         |> Observable.map (soundUpdater renderResources)
         |> Observable.subscribe (fun x -> ())
