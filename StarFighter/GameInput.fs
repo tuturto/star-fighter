@@ -20,6 +20,7 @@ type GameAction =
 let menuTimeStream =
     gameTimeStream
     |> Observable.filter (fun x -> gameModeStream.Value = Menu)
+    |> Observable.publish
 
 let gameRunningTimeStream =
     gameTimeStream

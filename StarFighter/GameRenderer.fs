@@ -12,6 +12,7 @@ open Bullets
 open Explosions
 open PowerUps
 open Scoring
+open ReadyScreen
 
 let menuRenderStream =
     renderStream
@@ -197,13 +198,7 @@ let readyScreenRenderer frame frameStream =
     if frame.time.IsSome
        then Option.iter (fun res -> 
                                 let time = frame.time.Value 
-                                let font = res.fonts.Item "blade-12"
-                                let lives = match newFrame.player.Value with
-                                                | NormalPlayer x -> x.lives 
-                                                | ExplodingPlayer x -> x.lives
-                                res.spriteBatch.DrawString(font, "get ready!", Vector2(455.0f, 300.0f), Color.White)
-                                res.spriteBatch.DrawString(font, "ships left:", Vector2(445.0f, 350.0f), Color.White)
-                                res.spriteBatch.DrawString(font, lives.ToString(), Vector2(575.0f, 350.0f), Color.White)
+                                readyTextRenderer res time newFrame.player
                                 scoreRenderer newFrame.score res time) frameStream.renderResources
        else ()
     newFrame

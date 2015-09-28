@@ -23,6 +23,7 @@ open Explosions
 open PowerUps
 open Scoring
 open Sounds
+open ReadyScreen
 
 type Game () as this =
     inherit Microsoft.Xna.Framework.Game()
@@ -55,7 +56,9 @@ type Game () as this =
             (function | ExitingGame -> this.Exit()
                       | _ -> ())
 
-        Observable.subscribe menuInputHandler menuActionStream |> ignore
+        menuActionStream
+        |> Observable.subscribe menuInputHandler
+        |> ignore
 
         let starStream = menuTimeStream
                          |> Observable.merge gameRunningTimeStream
@@ -107,6 +110,12 @@ type Game () as this =
                           |> Observable.scanInit (0, 300) scoreUpdater
                           |> Observable.publish
 
+        let readyScreenStream = readyScreenTimeStream
+                                |> Observable.map mapTimeToReadyScreen
+                                |> Observable.merge <| Observable.map mapModeToReadyScreen gameModeStream
+                                |> Observable.scanInit initialReadyState (readyScreenUpdater gameModeStream.OnNext)
+                                |> Observable.subscribe (fun x -> ())
+
         menuRenderStream
         |> Observable.map mapRenderStreamToFrame
         |> Observable.merge <| Observable.map mapStarsToFrame starStream
@@ -143,12 +152,14 @@ type Game () as this =
 
         starStream.Connect() |> ignore
         bulletStream.Connect() |> ignore
-        playerActionStream.Connect() |> ignore
-        gameRunningTimeStream.Connect() |> ignore
+        playerActionStream.Connect() |> ignore       
         enemiesStream.Connect() |> ignore
         playerStream.Connect() |> ignore
         powerUpStream.Connect() |> ignore
         scoreStream.Connect() |> ignore
+        
+        menuTimeStream.Connect() |> ignore
+        gameRunningTimeStream.Connect() |> ignore
         readyScreenTimeStream.Connect() |> ignore
 
     override this.LoadContent() =
