@@ -54,7 +54,7 @@ let addMovementActions (ship:NormalPlayerInfo) action =
                        | Move (dx, 0.0f) -> { ship.speed with dx=dx; }
                        | Move (0.0f, dy) -> { ship.speed with dy=dy; }
                        | Move (dx, dy) -> { dx=dx; dy=dy; }
-                       | _ -> ship.speed
+                       | _ -> { dx=0.0f; dy=0.0f; }
     { ship with speed = newSpeed }
 
 let private clampLocation (state:NormalPlayerInfo) =
@@ -74,12 +74,7 @@ let playerUpdater playSound (state:Player) ((enemies:Enemy list), ((actions:Game
         | NormalPlayer (ship:NormalPlayerInfo) ->
                 let collisionPoints = List.map (collision time ship) enemies
                                       |> List.filter (fun x -> x.IsSome)
-                let newState = Array.fold (fun acc item ->
-                                               match item with
-                                                   | Move (dx, dy) -> addMovementActions acc item
-                                                   | Attack -> ship)
-                                           ship
-                                           actions
+                let newState = Array.fold (fun acc item -> addMovementActions acc item) ship actions
                                |> clampLocation
                 if List.isEmpty collisionPoints
                    then NormalPlayer ({ newState with location = newState.location + newState.speed * timeCoeff time * 250.0f })
