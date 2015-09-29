@@ -66,7 +66,7 @@ let enemiesUpdater deadEnemiesReport (enemyBulletCollisions:BehaviorSubject<Bull
                                   else enemy)
     |> List.map (fun enemy -> { enemy with location = enemy.location + enemy.speed * timeCoeff time })
     |> List.map (fun enemy -> 
-                    if enemy.location.y > 768.0f || enemy.location.x < -96.0f || enemy.location.x > 1120.0f
+                    if enemy.location.y > 864.0f || enemy.location.x < -96.0f || enemy.location.x > 1120.0f
                        then randomEnemy res rng time
                        else enemy)
     |> spawnEnemies res rng time

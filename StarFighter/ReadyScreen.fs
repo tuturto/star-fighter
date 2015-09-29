@@ -35,7 +35,7 @@ let delayElapsed gameTime startTime =
 let readyScreenUpdater newGameMode (state:readyState) (frame:ReadyFrame) =
     match frame.time with
         | Some time -> if delayElapsed frame.time state.startTime 
-                          then newGameMode GameRunning
+                          then newGameMode ExitingGame
                                inactiveState
                           else if state.startTime.IsNone 
                                   then { state with startTime = Some time.TotalGameTime.TotalMilliseconds }
@@ -50,9 +50,4 @@ let readyScreenUpdater newGameMode (state:readyState) (frame:ReadyFrame) =
 let readyTextRenderer res time player = 
     Option.iter (fun player ->
                      let font = res.fonts.Item "blade-12"
-                     let lives = match player with
-                                     | NormalPlayer x -> x.lives 
-                                     | ExplodingPlayer x -> x.lives
-                     res.spriteBatch.DrawString(font, "get ready!", Vector2(455.0f, 300.0f), Color.White)
-                     res.spriteBatch.DrawString(font, "ships left:", Vector2(445.0f, 350.0f), Color.White)
-                     res.spriteBatch.DrawString(font, lives.ToString(), Vector2(575.0f, 350.0f), Color.White)) player
+                     res.spriteBatch.DrawString(font, "Game Over!", Vector2(455.0f, 300.0f), Color.White)) player

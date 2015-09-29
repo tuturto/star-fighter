@@ -197,8 +197,8 @@ let readyScreenRenderer frame frameStream =
     let newFrame = frame ++ frameStream
     if frame.time.IsSome
        then Option.iter (fun res -> 
-                                let time = frame.time.Value 
-                                readyTextRenderer res time newFrame.player
-                                scoreRenderer newFrame.score res time) frameStream.renderResources
+                             let time = frame.time.Value 
+                             readyTextRenderer res time newFrame.player
+                             scoreRenderer newFrame.score res time) frameStream.renderResources
        else ()
     newFrame
