@@ -38,16 +38,16 @@ type Frame =
       time: GameTime option
       score: (int * int) option }
     static member (++) (arg1, arg2) =
-        { player = Option.orElse arg1.player arg2.player
-          enemies = Option.orElse arg1.enemies arg2.enemies
-          bullets = Option.orElse arg1.bullets arg2.bullets
-          explosions = Option.orElse arg1.explosions arg2.explosions
-          powerUps = Option.orElse arg1.powerUps arg2.powerUps
-          menu = Option.orElse arg1.menu arg2.menu
-          starField = Option.orElse arg1.starField arg2.starField
-          renderResources = Option.orElse arg1.renderResources arg2.renderResources
-          time = Option.orElse arg1.time arg2.time
-          score = Option.orElse arg1.score arg2.score }
+        { player = Option.coalesce arg2.player arg1.player 
+          enemies = Option.coalesce arg2.enemies arg1.enemies
+          bullets = Option.coalesce arg2.bullets arg1.bullets
+          explosions = Option.coalesce arg2.explosions arg1.explosions
+          powerUps = Option.coalesce arg2.powerUps arg1.powerUps
+          menu = Option.coalesce arg2.menu arg1.menu
+          starField = Option.coalesce arg2.starField arg1.starField
+          renderResources = Option.coalesce arg2.renderResources arg1.renderResources
+          time = Option.coalesce arg2.time arg1.time
+          score = Option.coalesce arg2.score arg1.score }
 
 let initialFrame =
     { player = None

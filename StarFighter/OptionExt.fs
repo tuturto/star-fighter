@@ -15,11 +15,6 @@ let getOrElse d =
     | Some a -> a
     | None -> d
 
-let orElse b a =
-    match a with
-    | Some _ -> a
-    | None -> b
-
 let lift2 f x y =
     match x with 
     | None -> None
